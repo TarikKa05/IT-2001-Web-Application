@@ -7,6 +7,8 @@
   border-radius: 3px;
 }
 
+
+
 :root {
   --primary-color: #111317;
   --primary-color-light: #1f2125;
@@ -343,11 +345,6 @@ input[type="number"] {
   box-shadow: 5px 5px 12px black;
 }
 
-#editQuantityModal .modal-subtitle {
-  color: #6c757d;
-  font-size: 0.9rem;
-}
-
 body.no-bootstrap .modal {
   position: fixed;
   top: 0;
@@ -359,15 +356,18 @@ body.no-bootstrap .modal {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  pointer-events: none;
 }
 
 body.no-bootstrap .modal.show {
   display: flex;
+  overflow: auto;
 }
 
 body.no-bootstrap .modal-dialog {
   max-width: 420px;
   width: 100%;
+  pointer-events: auto;
 }
 
 body.no-bootstrap .modal-content {
@@ -375,6 +375,9 @@ body.no-bootstrap .modal-content {
   border-radius: 0.75rem;
   box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.35);
   width: 100%;
+  color: #212529;
+  padding: 1.5rem;
+  pointer-events: auto;
 }
 
 body.no-bootstrap .modal-header,
@@ -388,10 +391,6 @@ body.no-bootstrap .modal-footer {
 
 body.no-bootstrap .btn-close {
   filter: invert(60%);
-}
-
-#editQuantityModal input[type="number"] {
-  width: 100%;
 }
 
 .background-image {
@@ -723,6 +722,54 @@ footer {
 
 .checkout-button:hover {
   background-color: #218838;
+}
+
+.quantity-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.quantity-value {
+  min-width: 2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.qty-btn {
+  background-color: maroon;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.qty-btn:hover {
+  background-color: #a00000;
+  transform: translateY(-1px);
+}
+
+.qty-btn:active {
+  transform: translateY(0);
+}
+
+.payment-message {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f5132;
+  min-height: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.payment-message--visible {
+  opacity: 1;
 }
 
 /*Navigacija*/
@@ -1315,10 +1362,17 @@ img {
   padding: 5px;
 }
 
+.weather-card {
+  background-color: #d9f0ff;
+  border: 1px solid #b3e0ff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  color: #04334d;
+}
 
 
-
-
-
-
+.weather-card h3 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
 

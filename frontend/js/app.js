@@ -15,14 +15,18 @@ document.addEventListener('click', (event) => {
   });
 
   item.classList.toggle('active');
+
+  faqWrapper.querySelectorAll('.faq-item').forEach((faqItem) => {
+    const answer = faqItem.querySelector('.faq-answer');
+    if (!answer) return;
+    answer.style.display = faqItem.classList.contains('active') ? 'block' : 'none';
+  });
 });
 
 // ---------------- Cart view handling ----------------
 
 const cartState = {
   products: [],
-  currentEditIndex: null,
-  modalInstance: null,
 };
 
 function renderCartTable() {
@@ -47,15 +51,22 @@ function renderCartTable() {
         <tr id="product-${index}">
           <td>${product.name ?? 'Unnamed product'}</td>
           <td>
-            <div class="d-flex align-items-center">
-              <span id="quantity-display-${index}">${quantity}</span>
+            <div class="quantity-controls">
               <button
                 type="button"
-                class="btn btn-sm btn-primary ms-2 btn-sm-custom edit-product-btn"
-                data-edit-index="${index}"
-                data-bs-toggle="modal"
-                data-bs-target="#editQuantityModal"
-              >Edit</button>
+                class="qty-btn decrease"
+                data-qty-change="down"
+                data-index="${index}"
+                aria-label="Decrease quantity"
+              >↓</button>
+              <span id="quantity-display-${index}" class="quantity-value">${quantity}</span>
+              <button
+                type="button"
+                class="qty-btn increase"
+                data-qty-change="up"
+                data-index="${index}"
+                aria-label="Increase quantity"
+              >↑</button>
             </div>
           </td>
           <td>${price}$</td>
@@ -77,7 +88,13 @@ async function loadCartProducts() {
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
 
     const data = await res.json();
-    cartState.products = Array.isArray(data) ? data : [];
+    cartState.products = Array.isArray(data)
+      ? data.map((item = {}) => ({
+          ...item,
+          price: Number(item.price) || 0,
+          quantity: Number(item.quantity) || 0,
+        }))
+      : [];
     renderCartTable();
   } catch (error) {
     console.error('Failed to load cart items:', error);
@@ -95,6 +112,25 @@ async function loadCartProducts() {
   }
 }
 
+function adjustQuantity(index, delta) {
+  if (!Number.isInteger(index) || !cartState.products[index]) return;
+
+  const product = cartState.products[index];
+  const currentQuantity = Number(product.quantity) || 0;
+  const nextQuantity = Math.max(0, currentQuantity + delta);
+
+  if (nextQuantity === currentQuantity) return;
+
+  product.quantity = nextQuantity;
+  const paymentMessage = document.getElementById('paymentMessage');
+  if (paymentMessage) {
+    paymentMessage.textContent = '';
+    paymentMessage.classList.remove('payment-message--visible');
+  }
+  renderCartTable();
+  updateDisplayedTotalIfPresent();
+}
+
 function handleTotalCalculation() {
   const total = cartState.products.reduce((sum, product = {}) => {
     const quantity = Number(product.quantity) || 0;
@@ -103,71 +139,34 @@ function handleTotalCalculation() {
   }, 0);
 
   const totalAmount = document.getElementById('totalAmount');
-  if (totalAmount) {
-    totalAmount.textContent = `Total Amount: $${total}`;
+  
+
+  const paymentMessage = document.getElementById('paymentMessage');
+  if (paymentMessage) {
+    if (total > 0) {
+      paymentMessage.textContent = `Payment of $${total} processed successfully! You will receive an email with the details shortly.`;
+      paymentMessage.classList.add('payment-message--visible');
+    } else {
+      paymentMessage.textContent = 'Add items to your cart before proceeding to payment.';
+      paymentMessage.classList.add('payment-message--visible');
+    }
   }
 
   if (window.toastr) {
-    window.toastr.success(
-      `Total Payment: $${total}. Thank you for your purchase! Soon you will receive an email with more details.`,
-      'Purchase Successful',
-      {
-        timeOut: 5000,
-        closeButton: true,
-        progressBar: true,
-      }
-    );
-  }
-}
-
-function prepareEditModal(index) {
-  if (!Number.isInteger(index) || index < 0 || index >= cartState.products.length) {
-    console.warn('Invalid product index for edit modal:', index);
-    return false;
-  }
-
-  cartState.currentEditIndex = index;
-  const product = cartState.products[index] ?? {};
-  const quantity = Number(product.quantity) || 0;
-  const input = document.getElementById('editQuantityInput');
-  if (input) {
-    input.value = quantity;
-    const focusField = () => {
-      input.focus();
-      input.select();
-    };
-    if (typeof queueMicrotask === 'function') {
-      queueMicrotask(focusField);
-    } else {
-      setTimeout(focusField, 0);
-    }
-  }
-  const productNameLabel = document.getElementById('editProductName');
-  if (productNameLabel) {
-    productNameLabel.textContent = product.name ?? '';
-  }
-  return true;
-}
-
-function hideEditModal() {
-  const modalEl = document.getElementById('editQuantityModal');
-  if (modalEl) {
-    if (cartState.modalInstance && typeof cartState.modalInstance.hide === 'function') {
-      cartState.modalInstance.hide();
-    } else {
-      modalEl.classList.remove('show');
-      modalEl.style.display = 'none';
-      cartState.currentEditIndex = null;
-      const productNameLabel = document.getElementById('editProductName');
-      if (productNameLabel) productNameLabel.textContent = '';
-      const input = document.getElementById('editQuantityInput');
-      if (input) input.value = '';
-      document.body.classList.remove('modal-open');
-      document.body.style.removeProperty('padding-right');
-      document.querySelectorAll('.modal-backdrop').forEach((backdrop) => {
-        if (backdrop && backdrop.parentNode) {
-          backdrop.parentNode.removeChild(backdrop);
+    if (total > 0) {
+      window.toastr.success(
+        `Total Payment: $${total}. Thank you for your purchase! Soon you will receive an email with more details.`,
+        'Purchase Successful',
+        {
+          timeOut: 5000,
+          closeButton: true,
+          progressBar: true,
         }
+      );
+    } else {
+      window.toastr.info('Your cart is currently empty.', 'Nothing to charge', {
+        timeOut: 3000,
+        closeButton: true,
       });
     }
   }
@@ -186,40 +185,16 @@ function updateDisplayedTotalIfPresent() {
   totalAmount.textContent = `Total Amount: $${updatedTotal}`;
 }
 
-function saveQuantityFromModal() {
-  const input = document.getElementById('editQuantityInput');
-  const index = cartState.currentEditIndex;
-  if (!input || index === null || index === undefined) return;
-
-  const newQuantity = Number.parseInt(input.value, 10);
-  if (!Number.isInteger(newQuantity) || newQuantity < 0) {
-    alert('Please enter a valid quantity.');
-    input.focus();
-    return;
+function resetProduct(index) {
+  if (!cartState.products[index]) return;
+  cartState.products[index].quantity = 0;
+  const paymentMessage = document.getElementById('paymentMessage');
+  if (paymentMessage) {
+    paymentMessage.textContent = '';
+    paymentMessage.classList.remove('payment-message--visible');
   }
-
-  if (cartState.products[index]) {
-    cartState.products[index].quantity = newQuantity;
-  }
-
   renderCartTable();
   updateDisplayedTotalIfPresent();
-  hideEditModal();
-}
-
-function resetProduct(index) {
-  if (cartState.products[index]) {
-    cartState.products[index].quantity = 0;
-    const quantityCell = document.getElementById(`quantity-display-${index}`);
-    if (quantityCell) {
-      quantityCell.textContent = 0;
-    }
-    const totalCell = document.getElementById(`total-price-${index}`);
-    if (totalCell) {
-      totalCell.textContent = '0$';
-    }
-    updateDisplayedTotalIfPresent();
-  }
 }
 
 function initCartView() {
@@ -228,9 +203,6 @@ function initCartView() {
 
   cartTable.dataset.cartInitialized = 'true';
 
-  const hasBootstrapModal = Boolean(window.bootstrap?.Modal);
-  document.body.classList.toggle('no-bootstrap', !hasBootstrapModal);
-
   loadCartProducts();
 
   const totalButton = document.getElementById('calculateTotal');
@@ -238,66 +210,18 @@ function initCartView() {
     totalButton.addEventListener('click', handleTotalCalculation);
   }
 
-  const saveButton = document.getElementById('saveQuantity');
-  if (saveButton) {
-    saveButton.addEventListener('click', saveQuantityFromModal);
-  }
-
   cartTable.addEventListener('click', (event) => {
-    const editButton = event.target.closest('.edit-product-btn');
-    if (!editButton) return;
-
-    if (window.bootstrap?.Modal) {
-      return;
-    }
+    const control = event.target.closest('[data-qty-change]');
+    if (!control) return;
 
     event.preventDefault();
-    const index = Number.parseInt(editButton.dataset.editIndex, 10);
+
+    const index = Number.parseInt(control.dataset.index, 10);
     if (!Number.isInteger(index)) return;
-    if (!prepareEditModal(index)) return;
 
-    const modalEl = document.getElementById('editQuantityModal');
-    if (!modalEl) return;
-
-    modalEl.classList.add('show');
-    modalEl.style.display = 'block';
-    document.body.classList.add('modal-open');
-    if (!document.querySelector('.modal-backdrop')) {
-      const backdrop = document.createElement('div');
-      backdrop.className = 'modal-backdrop fade show';
-      document.body.appendChild(backdrop);
-    }
+    const delta = control.dataset.qtyChange === 'up' ? 1 : -1;
+    adjustQuantity(index, delta);
   });
-
-  const editModalEl = document.getElementById('editQuantityModal');
-  if (editModalEl) {
-    if (hasBootstrapModal) {
-      cartState.modalInstance = window.bootstrap.Modal.getOrCreateInstance(editModalEl);
-    }
-    editModalEl.addEventListener('show.bs.modal', (event) => {
-      const trigger = event.relatedTarget;
-      if (!trigger) return;
-      const index = Number.parseInt(trigger.getAttribute('data-edit-index'), 10);
-      if (!Number.isInteger(index) || !prepareEditModal(index)) {
-        event.preventDefault();
-      }
-    });
-    editModalEl.addEventListener('hidden.bs.modal', () => {
-      cartState.currentEditIndex = null;
-      const productNameLabel = document.getElementById('editProductName');
-      if (productNameLabel) productNameLabel.textContent = '';
-      const input = document.getElementById('editQuantityInput');
-      if (input) input.value = '';
-    });
-
-    editModalEl.querySelectorAll('[data-bs-dismiss="modal"]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        if (!window.bootstrap?.Modal) {
-          hideEditModal();
-        }
-      });
-    });
-  }
 
   // Provide global access for inline onclick handlers rendered in the table.
   window.resetProduct = resetProduct;
@@ -327,19 +251,10 @@ function initSigninView() {
     if (!emailValue) {
       messages.push('Please enter your email address.');
       emailInput?.classList.add('is-invalid');
-    } else {
-      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailPattern.test(emailValue)) {
-        messages.push('Please enter a valid email address.');
-        emailInput?.classList.add('is-invalid');
-      }
     }
 
     if (!passwordValue) {
       messages.push('Please enter your password.');
-      passwordInput?.classList.add('is-invalid');
-    } else if (passwordValue.length < 7 || passwordValue.length > 15) {
-      messages.push('Password must be between 7 and 15 characters.');
       passwordInput?.classList.add('is-invalid');
     }
 
@@ -358,41 +273,189 @@ function initSigninView() {
       return;
     }
 
-    const registeredUsers = JSON.parse(localStorage.getItem('registrationData') || '[]');
-    const matchingUser = registeredUsers.find(
-      (user = {}) =>
-        typeof user.email === 'string' &&
-        user.email.toLowerCase() === emailValue.toLowerCase()
-    );
-
-    if (!matchingUser) {
-      alert('No account found with that email. Please sign up first.');
-      return;
-    }
-
-    if (!matchingUser.password) {
-      alert('Your account does not have a password stored. Please complete the sign-up form again.');
-      return;
-    }
-
-    if (matchingUser.password !== passwordValue) {
-      alert('Incorrect password. Please try again.');
-      passwordInput?.classList.add('is-invalid');
-      return;
-    }
-
-    localStorage.setItem(
-      'currentUser',
-      JSON.stringify({
-        email: matchingUser.email,
-        username: matchingUser.username ?? '',
-        name: matchingUser.name ?? '',
-      })
-    );
-
-    alert('Signed in successfully!');
-    window.location.hash = '/products';
+    // Prototype flow: once all fields are valid, send the user to the landing page.
+    window.location.hash = '/landing';
   });
+}
+
+function initSignupView() {
+  const form = document.getElementById('registrationForm');
+  if (!form || form.dataset.signupInitialized === 'true') return;
+
+  form.dataset.signupInitialized = 'true';
+
+  const fields = {
+    name: form.querySelector('#name'),
+    username: form.querySelector('#username'),
+    email: form.querySelector('#email'),
+    password: form.querySelector('#password'),
+    repeatPassword: form.querySelector('#repeatPassword'),
+    phoneNumber: form.querySelector('#phoneNumber'),
+    height: form.querySelector('#height'),
+    weight: form.querySelector('#weight'),
+    country: form.querySelector('#country'),
+    birthDate: form.querySelector('#birthDate'),
+    gender: form.querySelector('#gender'),
+  };
+
+  const activityRadios = Array.from(form.querySelectorAll('input[name="activityLevel"]'));
+  const allValidatedInputs = [
+    ...Object.values(fields).filter(Boolean),
+    ...activityRadios,
+  ];
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    allValidatedInputs.forEach((input) => input.classList.remove('is-invalid'));
+    const messages = [];
+
+    if (!fields.name?.value.trim()) {
+      messages.push('Please enter your name.');
+      fields.name?.classList.add('is-invalid');
+    }
+
+    if (!fields.username?.value.trim()) {
+      messages.push('Please enter a username.');
+      fields.username?.classList.add('is-invalid');
+    }
+
+    const emailValue = fields.email?.value.trim() ?? '';
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!emailPattern.test(emailValue)) {
+      messages.push('Please enter a valid email address.');
+      fields.email?.classList.add('is-invalid');
+    }
+
+    const passwordValue = fields.password?.value.trim() ?? '';
+    if (passwordValue.length < 7 || passwordValue.length > 15) {
+      messages.push('Password must be between 7 and 15 characters.');
+      fields.password?.classList.add('is-invalid');
+    }
+
+    const repeatValue = fields.repeatPassword?.value.trim() ?? '';
+    if (passwordValue !== repeatValue) {
+      messages.push('Passwords must match.');
+      fields.repeatPassword?.classList.add('is-invalid');
+    }
+
+    const phoneValue = fields.phoneNumber?.value.trim() ?? '';
+    const phonePattern = /^[0-9]+$/;
+    if (!phonePattern.test(phoneValue)) {
+      messages.push('Please enter a valid phone number.');
+      fields.phoneNumber?.classList.add('is-invalid');
+    }
+
+    const height = Number.parseInt(fields.height?.value.trim() ?? '', 10);
+    if (Number.isNaN(height) || height < 100) {
+      messages.push('Height must be greater than or equal to 100 cm.');
+      fields.height?.classList.add('is-invalid');
+    }
+
+    const weight = Number.parseInt(fields.weight?.value.trim() ?? '', 10);
+    if (Number.isNaN(weight) || weight < 40) {
+      messages.push('Weight must be greater than or equal to 40 kg.');
+      fields.weight?.classList.add('is-invalid');
+    }
+
+    if (!fields.country?.value.trim()) {
+      messages.push('Please enter your country.');
+      fields.country?.classList.add('is-invalid');
+    }
+
+    if (!fields.birthDate?.value.trim()) {
+      messages.push('Please enter a valid date of birth.');
+      fields.birthDate?.classList.add('is-invalid');
+    }
+
+    if (!fields.gender?.value.trim()) {
+      messages.push('Please select a gender.');
+      fields.gender?.classList.add('is-invalid');
+    }
+
+    const selectedActivity = activityRadios.find((radio) => radio.checked);
+    if (!selectedActivity) {
+      messages.push('Please select an activity level.');
+      activityRadios.forEach((radio) => radio.classList.add('is-invalid'));
+    }
+
+    if (messages.length > 0) {
+      alert(messages.join('\n'));
+      return;
+    }
+
+    // Persist registration locally so the prototype can use the data later if needed.
+    try {
+      const existing = JSON.parse(localStorage.getItem('registrationData') || '[]');
+      const registrationEntry = {
+        name: fields.name?.value.trim() ?? '',
+        username: fields.username?.value.trim() ?? '',
+        email: emailValue,
+        password: passwordValue,
+        phoneNumber: phoneValue,
+        height,
+        weight,
+        country: fields.country?.value.trim() ?? '',
+        birthDate: fields.birthDate?.value.trim() ?? '',
+        gender: fields.gender?.value.trim() ?? '',
+        activityLevel: selectedActivity?.value ?? '',
+      };
+      existing.push(registrationEntry);
+      localStorage.setItem('registrationData', JSON.stringify(existing));
+    } catch (error) {
+      console.error('Failed to cache registration info:', error);
+    }
+
+    alert('Registration successful!');
+    window.location.hash = '/landing';
+  });
+}
+
+function initLandingView() {
+  const gallery = document.querySelector('.gallery');
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+  const closeModalBtn = document.getElementById('closeModal');
+
+  if (
+    gallery &&
+    modal &&
+    modalImage &&
+    closeModalBtn &&
+    gallery.dataset.galleryInitialized !== 'true'
+  ) {
+    const openModal = (src = '') => {
+      modal.style.display = 'flex';
+      modalImage.src = src;
+    };
+
+    const hideModal = () => {
+      modal.style.display = 'none';
+      modalImage.src = '';
+    };
+
+    gallery.querySelectorAll('img').forEach((image) => {
+      const fullSrc = image.dataset.full || image.src;
+      image.addEventListener('click', () => openModal(fullSrc));
+    });
+
+    closeModalBtn.addEventListener('click', hideModal);
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        hideModal();
+      }
+    });
+
+    gallery.dataset.galleryInitialized = 'true';
+  }
+
+  const faqWrapper = document.querySelector('.faq');
+  if (faqWrapper && faqWrapper.dataset.faqInitialized !== 'true') {
+    faqWrapper.querySelectorAll('.faq-answer').forEach((answer) => {
+      answer.style.display = 'none';
+    });
+    faqWrapper.dataset.faqInitialized = 'true';
+  }
 }
 
 document.addEventListener('view:loaded', (event) => {
@@ -400,58 +463,95 @@ document.addEventListener('view:loaded', (event) => {
 
   if (route === '/cart') {
     initCartView();
-  } else {
-    if (cartState.modalInstance && typeof cartState.modalInstance.dispose === 'function') {
-      cartState.modalInstance.dispose();
-    }
-    cartState.currentEditIndex = null;
-    cartState.modalInstance = null;
   }
 
   if (route === '/signin') {
     initSigninView();
+  }
+
+  if (route === '/landing') {
+    initLandingView();
+  }
+
+  if (route === '/signup') {
+    initSignupView();
   }
 });
 
 
 
 
+function handleLandingPosition(position) {
+  const output = document.getElementById('location');
+  if (!output) return;
+  output.innerText = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+}
+
+function handleLandingGeolocationError(error) {
+  const output = document.getElementById('location');
+  if (!output) return;
+  switch (error.code) {
+    case error.PERMISSION_DENIED:
+      output.innerText = 'User denied the request for Geolocation.';
+      break;
+    case error.POSITION_UNAVAILABLE:
+      output.innerText = 'Location information is unavailable.';
+      break;
+    case error.TIMEOUT:
+      output.innerText = 'The request to get user location timed out.';
+      break;
+    default:
+      output.innerText = 'An unknown error occurred.';
+  }
+}
+
+function updateLandingWeatherDisplay(data) {
+  const weatherDiv = document.getElementById('weather');
+  if (!weatherDiv) return;
+  weatherDiv.innerHTML = `
+      <div class="weather-card">
+        <h3>Current Weather:</h3>
+        <p><b>Temperature:</b> ${data.main?.temp ?? '-'}&deg;C</p>
+        <p><b>Weather:</b> ${data.weather?.[0]?.description ?? '-'}</p>
+        <p><b>Humidity:</b> ${data.main?.humidity ?? '-'}%</p>
+        <p><b>Wind Speed:</b> ${data.wind?.speed ?? '-'} m/s</p>
+      </div>
+    `;
+}
+
+
 window.getLocation = function () {
-  const out = document.getElementById('location');
+  const output = document.getElementById('location');
+  if (!output) return;
+
   if (!navigator.geolocation) {
-    out.textContent = 'Geolocation is not supported by your browser.';
+    output.innerText = 'Geolocation is not supported by this browser.';
     return;
   }
+
   navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude.toFixed(4);
-      const lon = pos.coords.longitude.toFixed(4);
-      out.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
-      
-    },
-    (err) => {
-      out.textContent = 'Location denied or unavailable.';
-      console.error(err);
-    }
+    handleLandingPosition,
+    handleLandingGeolocationError
   );
 };
 
 
-window.fetchWeatherData = async function (lat, lon) {
+window.fetchWeatherData = async function (latitude, longitude) {
+  const weatherDiv = document.getElementById('weather');
+  if (!weatherDiv) return;
+
+  const apiKey = '05b820be27153c766bb293e18b4f87c6';
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
+
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const w = data.current_weather;
-    const box = document.getElementById('weather');
-    box.innerHTML = `
-      <div class="alert alert-info">
-        Current weather: ${w.weathercode ?? '-'}<br>
-        Temperature: ${w.temperature}°C<br>
-        Wind: ${w.windspeed} km/h
-      </div>`;
-  } catch (e) {
-    console.error(e);
-    alert('Failed to fetch weather.');
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error('Failed to fetch weather data');
+    }
+    const data = await response.json();
+    updateLandingWeatherDisplay(data);
+  } catch (error) {
+    weatherDiv.innerHTML = `<p class="text-danger">Error fetching weather data: ${error.message}</p>`;
   }
 };
+

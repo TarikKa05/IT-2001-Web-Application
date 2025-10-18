@@ -33,53 +33,11 @@
           <div class="cart-summary mt-4">
             <button class="checkout-button btn btn-success" id="calculateTotal">Proceed to Payment</button>
             <p id="totalAmount" class="mt-3"></p>
+            <p id="paymentMessage" class="payment-message mt-2"></p>
           </div>
         </div>
       </div>
     </section>
 
 
-  </div>
-
-
- 
-  <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Succesful purchase</h3>
-        </div>
-        <div class="modal-body  d-flex justify-content-center align-items-center flex-column">
-          <img src="assets/photos/greenTick.png" alt="Success Mark Symbol" id="successfulMarkSymbol">
-
-          <p>Thank you for your purchase. Soon you will receive an email to confirm your purchase.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="productsButtons" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
- 
-
-  <div class="modal fade" id="editQuantityModal" tabindex="-1" aria-labelledby="editQuantityModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-           <div>
-             <h5 class="modal-title mb-1" id="editQuantityModalLabel">Edit Quantity</h5>
-             <p class="modal-subtitle mb-0 text-muted small" id="editProductName"></p>
-           </div> 
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <input type="number" class="form-control" id="editQuantityInput" min="0" placeholder="Enter new quantity">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="saveQuantity">Save</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
   </div>
