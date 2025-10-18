@@ -2,16 +2,19 @@
   {
     "name": "WHEY PROTEIN",
     "price": "40",
-    "description": "High-quality protein for muscle building."
+    "description": "High-quality protein for muscle building.",
+    "stock": 10
   },
   {
     "name": "CREATINE",
     "price": "30",
-    "description": "Increase strength and performance."
+    "description": "Increase strength and performance.",
+    "stock": 10
   },
   {
     "name": "OMEGA 3",
     "price": "15",
-    "description": "Supports heart health and overall wellness."
+    "description": "Supports heart health and overall wellness.",
+    "stock": 10
   }
 ]

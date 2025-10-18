@@ -25,6 +25,14 @@ const cartState = {
   products: [],
 };
 
+const DEFAULT_STOCK_LIMIT = 10;
+
+function setStockMessage(message = "") {
+  const stockMessage = document.getElementById("stockMessage");
+  if (!stockMessage) return;
+  stockMessage.textContent = message;
+}
+
 function renderCartTable() {
   const tbody = document.querySelector("#productTable tbody");
   if (!tbody) return;
@@ -32,7 +40,7 @@ function renderCartTable() {
   if (!Array.isArray(cartState.products) || cartState.products.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="5" class="text-center py-4">Cart is empty.</td>
+        <td colspan="6" class="text-center py-4">Cart is empty.</td>
       </tr>
     `;
     return;
@@ -42,6 +50,7 @@ function renderCartTable() {
     .map((product = {}, index) => {
       const quantity = Number(product.quantity) || 0;
       const price = Number(product.price) || 0;
+      const stock = Number.isFinite(product.stock) ? product.stock : 0;
       const totalPrice = quantity * price;
       return `
         <tr id="product-${index}">
@@ -54,7 +63,7 @@ function renderCartTable() {
                 data-qty-change="down"
                 data-index="${index}"
                 aria-label="Decrease quantity"
-              >â†“</button>
+              >&minus;</button>
               <span id="quantity-display-${index}" class="quantity-value">${quantity}</span>
               <button
                 type="button"
@@ -62,9 +71,10 @@ function renderCartTable() {
                 data-qty-change="up"
                 data-index="${index}"
                 aria-label="Increase quantity"
-              >â†‘</button>
+              >+</button>
             </div>
           </td>
+          <td>${stock}</td>
           <td>${price}$</td>
           <td id="total-price-${index}">${totalPrice}$</td>
           <td>
@@ -78,6 +88,7 @@ function renderCartTable() {
   tbody.innerHTML = rows;
 }
 
+
 async function loadCartProducts() {
   try {
     const res = await fetch("assets/cart.json", { cache: "no-store" });
@@ -85,11 +96,17 @@ async function loadCartProducts() {
 
     const data = await res.json();
     cartState.products = Array.isArray(data)
-      ? data.map((item = {}) => ({
-          ...item,
-          price: Number(item.price) || 0,
-          quantity: Number(item.quantity) || 0,
-        }))
+      ? data.map((item = {}) => {
+          const parsedStock = Number(item.stock);
+          const stock = Number.isFinite(parsedStock) && parsedStock > 0 ? parsedStock : DEFAULT_STOCK_LIMIT;
+          const parsedQuantity = Number(item.quantity);
+          return {
+            ...item,
+            price: Number(item.price) || 0,
+            quantity: Number.isFinite(parsedQuantity) ? Math.max(0, Math.min(stock, parsedQuantity)) : 0,
+            stock,
+          };
+        })
       : [];
     renderCartTable();
   } catch (error) {
@@ -98,7 +115,7 @@ async function loadCartProducts() {
     if (tbody) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="5" class="text-center text-danger py-4">
+          <td colspan="6" class="text-center text-danger py-4">
             Unable to load cart data.<br/>
             <small>${error.message}</small>
           </td>
@@ -108,16 +125,25 @@ async function loadCartProducts() {
   }
 }
 
+
 function adjustQuantity(index, delta) {
   if (!Number.isInteger(index) || !cartState.products[index]) return;
 
   const product = cartState.products[index];
   const currentQuantity = Number(product.quantity) || 0;
-  const nextQuantity = Math.max(0, currentQuantity + delta);
+  const stock = Number.isFinite(product.stock) ? product.stock : 0;
 
+  if (delta > 0 && currentQuantity >= stock) {
+    const stockText = stock === 0 ? "This item is currently out of stock." : `Only ${stock} item${stock === 1 ? "" : "s"} available in stock.`;
+    setStockMessage(stockText);
+    return;
+  }
+
+  const nextQuantity = Math.max(0, Math.min(stock, currentQuantity + delta));
   if (nextQuantity === currentQuantity) return;
 
   product.quantity = nextQuantity;
+  setStockMessage("");
   const paymentMessage = document.getElementById("paymentMessage");
   if (paymentMessage) {
     paymentMessage.textContent = "";
@@ -126,6 +152,7 @@ function adjustQuantity(index, delta) {
   renderCartTable();
   updateDisplayedTotalIfPresent();
 }
+
 
 function handleTotalCalculation() {
   const total = cartState.products.reduce((sum, product = {}) => {
@@ -165,6 +192,7 @@ function updateDisplayedTotalIfPresent() {
 function resetProduct(index) {
   if (!cartState.products[index]) return;
   cartState.products[index].quantity = 0;
+  setStockMessage("");
   const paymentMessage = document.getElementById("paymentMessage");
   if (paymentMessage) {
     paymentMessage.textContent = "";
@@ -173,6 +201,7 @@ function resetProduct(index) {
   renderCartTable();
   updateDisplayedTotalIfPresent();
 }
+
 
 function initCartView() {
   const cartTable = document.getElementById("productTable");
