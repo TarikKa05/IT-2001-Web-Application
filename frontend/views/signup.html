@@ -1,0 +1,90 @@
+<div class="background-image">
+  <section id="registrationFormInformation">
+    <div class="container my-5">
+      <div class="card mx-auto" style="max-width: 600px; border-color: maroon">
+        <div class="card-header text-center" id="registrationFormTitle">
+          <h3>REGISTRATION</h3>
+        </div>
+        <div class="card-body">
+          <form id="registrationForm" class="was-validated" novalidate>
+            <div id="userList" class="mb-3"></div>
+            <div class="mb-3">
+              <label for="name" class="form-label">Name:</label>
+              <input type="text" class="form-control" id="name" required />
+              <div class="invalid-feedback">Please enter your name.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="username" class="form-label">Username:</label>
+              <input type="text" class="form-control" id="username" required />
+              <div class="invalid-feedback">Please enter a username.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email:</label>
+              <input type="email" class="form-control" id="email" required />
+              <div class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password:</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                required
+              />
+              <div class="invalid-feedback">
+                Password must be between 7 and 15 characters.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="repeatPassword" class="form-label"
+                >Repeat Password:</label
+              >
+              <input
+                type="password"
+                class="form-control"
+                id="repeatPassword"
+                required
+              />
+              <div class="invalid-feedback">Passwords must match.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="phoneNumber" class="form-label">Phone Number:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="phoneNumber"
+                required
+              />
+              <div class="invalid-feedback">
+                Please enter your phone number.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="birthDate" class="form-label">Date of Birth:</label>
+              <input type="date" class="form-control" id="birthDate" required />
+              <div class="invalid-feedback">
+                Please enter a valid date of birth.
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary w-100 d-flex justify-content-center align-items-center"
+              id="submitBtn"
+            >
+              Submit
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

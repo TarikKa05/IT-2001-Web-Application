@@ -1,0 +1,2 @@
+This is an emtpy file to shoy you that I have backend folder structure because when this folder is empty it will not upload it to the github.
+I will delete it when I start working on backend.
