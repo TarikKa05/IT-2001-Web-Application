@@ -3,7 +3,7 @@ class Database {
    private static $host = 'localhost';
    private static $dbName = 'gym_web_app';
    private static $username = 'root';
-   private static $password = '';
+   private static $password = 'sifra123';
    private static $connection = null;
 
 
