@@ -26,5 +26,13 @@ class UserDao extends BaseDao {
         return $this->delete($id);
     }
 
+    // nedded for login
+    public function getUserByEmail($email) {
+        $stmt = $this->connection->prepare("SELECT * FROM " . $this->table . " WHERE email = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
 }
 ?>
