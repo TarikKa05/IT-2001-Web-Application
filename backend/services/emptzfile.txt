@@ -1,0 +1,1 @@
+This is just an empty file so that services folder gets pushed to the GitHub, so that backend folder structure is complete. This file is not important and I will delete it later. 
