@@ -1,6 +1,6 @@
 <?php
-require_once 'BaseService.php';
-require_once '../dao/ProductDao.php';
+require_once __DIR__ . '/BaseService.php';
+require_once __DIR__ . '/../dao/ProductDao.php';
 class ProductService extends BaseService {
    public function __construct() {
 

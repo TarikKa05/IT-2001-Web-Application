@@ -1,6 +1,6 @@
 <?php
-require_once 'BaseService.php';
-require_once '../dao/CategoryDao.php';
+require_once __DIR__ . '/BaseService.php';
+require_once __DIR__ . '/../dao/CategoryDao.php';
 class CategoryService extends BaseService {
    public function __construct() {
 
