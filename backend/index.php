@@ -16,11 +16,15 @@ Flight::register('productCategoryService', 'ProductCategoryService');
 require_once __DIR__ . '/rest/services/ProductService.php';
 Flight::register('productService', 'ProductService');
 
+require_once __DIR__ . '/rest/services/UserService.php';
+Flight::register('userService', 'UserService');
+
 require_once __DIR__ . '/rest/routes/OrderRoutes.php';
 require_once __DIR__ . '/rest/routes/CategoryRoutes.php';
 require_once __DIR__ . '/rest/routes/OrderProductRoutes.php';
 require_once __DIR__ . '/rest/routes/ProductCategoryRoutes.php';
 require_once __DIR__ . '/rest/routes/ProductRoutes.php';
+require_once __DIR__ . '/rest/routes/UserRoutes.php';
 Flight::start();
 
 
