@@ -1,5 +1,5 @@
 <?php
-require '../vendor/autoload.php'; //run autoloader
+require 'vendor/autoload.php'; //run autoloader
 
 require_once __DIR__ . '/rest/services/CategoryService.php';
 Flight::register('categoryService', 'CategoryService'); 
