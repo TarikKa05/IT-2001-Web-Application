@@ -9,19 +9,19 @@ class OrderService extends BaseService {
    }
 
    public function createOrder($order) {
-       return $this->dao->createOrder($order);
+       return $this->create($order);
    }
    public function getOrderById($id) {
-       return $this->dao->getOrderById($id);
+       return $this->getById($id);
    }
    public function getAllOrders() {
-       return $this->dao->getAllOrders();
+       return $this->getAll();
    }
    public function updateOrder($id, $order) {
-       return $this->dao->updateOrder($id, $order);
+       return $this->update($id, $order);
    }
    public function deleteOrder($id) {
-       return $this->dao->deleteOrder($id);
+       return $this->delete($id);
    }
 }
 

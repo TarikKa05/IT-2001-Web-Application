@@ -9,19 +9,19 @@ class CategoryService extends BaseService {
    }
 
    public function createCategory($category) {
-       return $this->dao->createCategory($category);
+       return $this->create($category);
    }
    public function getCategoryById($id) {
-       return $this->dao->getCategoryById($id);
+       return $this->getById($id);
    }
    public function getAllCategories() {
-       return $this->dao->getAllCategories();
+       return $this->getAll();
    }
    public function updateCategory($id, $category) {
-       return $this->dao->updateCategory($id, $category);
+       return $this->update($id, $category);
    }
    public function deleteCategory($id) {
-       return $this->dao->deleteCategory($id);
+       return $this->delete($id);
    }
 }
 

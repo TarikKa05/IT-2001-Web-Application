@@ -9,19 +9,19 @@ class OrderProductService extends BaseService {
    }
 
    public function createOrderProduct($orderProduct) {
-       return $this->dao->creatOrderProduct($orderProduct);
+       return $this->create($orderProduct);
    }
    public function getOrderProductById($id) {
-       return $this->dao->getOrderProductById($id);
+       return $this->getById($id);
    }
-   public function  getAllOrderProducts() {
-       return $this->dao->getAllOrderProducts();
+   public function getAllOrderProducts() {
+       return $this->getAll();
    }
    public function updateOrderProduct($id, $orderProduct) {
-       return $this->dao->updateOrderProduct($id, $orderProduct);
+       return $this->update($id, $orderProduct);
    }
    public function deleteOrderProduct($id) {
-       return $this->dao->deleteOrderProduct($id);
+       return $this->delete($id);
    }
 }
 

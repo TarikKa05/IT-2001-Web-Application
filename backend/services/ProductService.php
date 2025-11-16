@@ -9,19 +9,19 @@ class ProductService extends BaseService {
    }
 
    public function createProduct($product) {
-       return $this->dao->createProduct($product);
+       return $this->create($product);
    }
    public function getProductById($id) {
-       return $this->dao->getProductById($id);
+       return $this->getById($id);
    }
    public function getAllProducts() {
-       return $this->dao->getAllProducts();
+       return $this->getAll();
    }
    public function updateProduct($id, $product) {
-       return $this->dao->updateProduct($id, $product);
+       return $this->update($id, $product);
    }
    public function deleteProduct($id) {
-       return $this->dao->deleteProduct($id);
+       return $this->delete($id);
    }
    public function getProductsByCategoryName($categoryName) {
        return $this->dao->getProductsByCategoryName($categoryName);
