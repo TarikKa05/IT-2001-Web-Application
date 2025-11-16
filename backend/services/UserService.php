@@ -1,14 +1,17 @@
 <?php
 require_once __DIR__ . '/BaseService.php';
 require_once __DIR__ . '/../dao/UserDao.php';
-class UserService extends BaseService {
-   public function __construct() {
+class UserService extends BaseService
+{
+    public function __construct()
+    {
 
-       $dao = new UserDao();
-       parent::__construct($dao);
-   }
+        $dao = new UserDao();
+        parent::__construct($dao);
+    }
 
-   public function createUser($user) {
+    public function createUser($user)
+    {
         if (empty($user['name']) || empty($user['email']) || empty($user['password']) || empty($user['username']) || empty($user['phone_number']) || empty($user['date_of_birth'])) {
             throw new InvalidArgumentException('Field is required.');
         }
@@ -24,16 +27,19 @@ class UserService extends BaseService {
         $user['password'] = password_hash($user['password'], PASSWORD_BCRYPT);
 
         return $this->create($user);
-   }
+    }
 
-   public function getUserById($id) {
+    public function getUserById($id)
+    {
         return $this->getById($id);
-   }
-   public function getAllUsers() {
-       return $this->getAll();
-   }
-   public function updateUser($id, $user) {
-        if (empty($user['name']) || empty($user['email']) || empty($user['password'] || empty($user['username']) || empty($user['phone_number']) || empty($user['date_of_birth']))) {
+    }
+    public function getAllUsers()
+    {
+        return $this->getAll();
+    }
+    public function updateUser($id, $user)
+    {
+        if (empty($user['name']) || empty($user['email']) || empty($user['password']) || empty($user['username']) || empty($user['phone_number']) || empty($user['date_of_birth'])) {
             throw new InvalidArgumentException('Field is required.');
         }
 
@@ -51,14 +57,16 @@ class UserService extends BaseService {
         } else {
             unset($user['password']);
         }
-       return $this->update($id, $user);
-   }
-   public function deleteUser($id) {
-       return $this->delete($id);
-   }
-   public function getUserByEmail($email) {
-       return $this->dao->getUserByEmail($email);
-   }
+        return $this->update($id, $user);
+    }
+    public function deleteUser($id)
+    {
+        return $this->delete($id);
+    }
+    public function getUserByEmail($email)
+    {
+        return $this->dao->getUserByEmail($email);
+    }
 }
 
 ?>

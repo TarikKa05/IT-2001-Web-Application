@@ -1,14 +1,17 @@
 <?php
 require_once __DIR__ . '/BaseService.php';
 require_once __DIR__ . '/../dao/ProductCategoryDao.php';
-class ProductCategoryService extends BaseService {
-   public function __construct() {
+class ProductCategoryService extends BaseService
+{
+    public function __construct()
+    {
 
-       $dao = new ProductCategoryDao();
-       parent::__construct($dao);
-   }
+        $dao = new ProductCategoryDao();
+        parent::__construct($dao);
+    }
 
-   public function createProductCategory ($productCategory) {
+    public function createProductCategory($productCategory)
+    {
         if (empty($productCategory['product_id']) || empty($productCategory['category_id'])) {
             throw new InvalidArgumentException('Field is required.');
         }
@@ -18,14 +21,17 @@ class ProductCategoryService extends BaseService {
         }
 
         return $this->create($productCategory);
-   }
-   public function getProductCategoryById($id) {
-       return $this->getById($id);
-   }
-   public function  getAllProductCategories() {
-       return $this->getAll();
-   }
-   public function  updateProductCategory($id, $productCategory) {
+    }
+    public function getProductCategoryById($id)
+    {
+        return $this->getById($id);
+    }
+    public function getAllProductCategories()
+    {
+        return $this->getAll();
+    }
+    public function updateProductCategory($id, $productCategory)
+    {
         if (empty($productCategory['product_id']) || empty($productCategory['category_id'])) {
             throw new InvalidArgumentException('Field is required.');
         }
@@ -35,10 +41,11 @@ class ProductCategoryService extends BaseService {
         }
 
         return $this->update($id, $productCategory);
-   }
-   public function deleteProductCategory($id) {
-       return $this->delete($id);
-   }
+    }
+    public function deleteProductCategory($id)
+    {
+        return $this->delete($id);
+    }
 }
 
 ?>
