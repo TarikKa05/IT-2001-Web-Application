@@ -9,7 +9,15 @@ class ProductCategoryService extends BaseService {
    }
 
    public function createProductCategory ($productCategory) {
-       return $this->create($productCategory);
+        if (empty($productCategory['product_id']) || empty($productCategory['category_id'])) {
+            throw new InvalidArgumentException('Field is required.');
+        }
+
+        if (!is_numeric($productCategory['product_id']) || !is_numeric($productCategory['category_id'])) {
+            throw new InvalidArgumentException('product_id and category_id must be numbers.');
+        }
+
+        return $this->create($productCategory);
    }
    public function getProductCategoryById($id) {
        return $this->getById($id);
@@ -18,7 +26,15 @@ class ProductCategoryService extends BaseService {
        return $this->getAll();
    }
    public function  updateProductCategory($id, $productCategory) {
-       return $this->update($id, $productCategory);
+        if (empty($productCategory['product_id']) || empty($productCategory['category_id'])) {
+            throw new InvalidArgumentException('Field is required.');
+        }
+
+        if (!is_numeric($productCategory['product_id']) || !is_numeric($productCategory['category_id'])) {
+            throw new InvalidArgumentException('product_id and category_id must be numbers.');
+        }
+
+        return $this->update($id, $productCategory);
    }
    public function deleteProductCategory($id) {
        return $this->delete($id);

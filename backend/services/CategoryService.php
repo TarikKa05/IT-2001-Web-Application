@@ -9,7 +9,14 @@ class CategoryService extends BaseService {
    }
 
    public function createCategory($category) {
-       return $this->create($category);
+        if (empty($category['name'])) {
+            throw new InvalidArgumentException('Field "name" is required.');
+        }
+
+        if ($this->dao->getCategoryByName($category['name'])) {
+            throw new InvalidArgumentException('Category name already exists.');
+        }
+        return $this->create($category);
    }
    public function getCategoryById($id) {
        return $this->getById($id);
@@ -18,7 +25,15 @@ class CategoryService extends BaseService {
        return $this->getAll();
    }
    public function updateCategory($id, $category) {
-       return $this->update($id, $category);
+        if (empty($category['name'])) {
+            throw new InvalidArgumentException('Field "name" is required.');
+        }
+        
+        $existing = $this->dao->getCategoryByName($category['name']);
+        if ($existing && $existing['id'] != $id) {
+            throw new InvalidArgumentException('Category name already exists.');
+        }
+        return $this->update($id, $category);
    }
    public function deleteCategory($id) {
        return $this->delete($id);

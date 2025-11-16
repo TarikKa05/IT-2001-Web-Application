@@ -9,8 +9,17 @@ class OrderService extends BaseService {
    }
 
    public function createOrder($order) {
-       return $this->create($order);
+        if ( empty($order['user_id']) || empty($order['total_price']) || empty($order['status'])) {
+            throw new InvalidArgumentException('Field is  required.');
+        }
+
+        if (!is_numeric($order['total_price']) || $order['total_price'] < 0) {
+            throw new InvalidArgumentException('total_price must be a non-negative number.');
+        }
+
+        return $this->create($order);
    }
+
    public function getOrderById($id) {
        return $this->getById($id);
    }
@@ -18,7 +27,15 @@ class OrderService extends BaseService {
        return $this->getAll();
    }
    public function updateOrder($id, $order) {
-       return $this->update($id, $order);
+        if ( empty($order['user_id']) || empty($order['total_price']) || empty($order['status'])) {
+            throw new InvalidArgumentException('Field is required.');
+        }
+
+        if (!is_numeric($order['total_price']) || $order['total_price'] < 0) {
+            throw new InvalidArgumentException('total_price must be a non-negative number.');
+        }
+
+        return $this->update($id, $order);
    }
    public function deleteOrder($id) {
        return $this->delete($id);

@@ -9,7 +9,7 @@ class UserService extends BaseService {
    }
 
    public function createUser($user) {
-        if (empty($user['name']) || empty($user['email']) || empty($user['password'] || empty($user['username']) || empty($user['phone_number']) || empty($user['date_of_birth']))) {
+        if (empty($user['name']) || empty($user['email']) || empty($user['password']) || empty($user['username']) || empty($user['phone_number']) || empty($user['date_of_birth'])) {
             throw new InvalidArgumentException('Field is required.');
         }
 
