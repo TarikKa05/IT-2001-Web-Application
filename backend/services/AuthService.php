@@ -17,30 +17,38 @@ class AuthService extends BaseService {
        return $this->auth_dao->get_user_by_email($email);
    }
 
+   public function register($entity) {
+    // provjera obaveznih polja
+    $required = ['name','username','email','password','phone_number','date_of_birth','role'];
+    foreach ($required as $field) {
+        if (empty($entity[$field])) {
+            return ['success' => false, 'error' => 'All fields are required.'];
+        }
+    }
 
-   public function register($entity) {  
-       if (empty($entity['email']) || empty($entity['password'])) {
-           return ['success' => false, 'error' => 'Email and password are required.'];
-       }
+    if (!filter_var($entity['email'], FILTER_VALIDATE_EMAIL)) {
+        return ['success' => false, 'error' => 'Invalid email format.'];
+    }
+
+    $email_exists = $this->auth_dao->get_user_by_email($entity['email']);
+    if ($email_exists) {
+        return ['success' => false, 'error' => 'Email already registered.'];
+    }
+
+    $entity['password'] = password_hash($entity['password'], PASSWORD_BCRYPT);
+
+    $created = $this->create($entity);
+
+    if (!$created) {
+        return ['success' => false, 'error' => 'Failed to create user.'];
+    }
+
+    unset($entity['password']);
+
+    return ['success' => true, 'data' => $entity];
+}
 
 
-       $email_exists = $this->auth_dao->get_user_by_email($entity['email']);
-       if($email_exists){
-           return ['success' => false, 'error' => 'Email already registered.'];
-       }
-
-
-       $entity['password'] = password_hash($entity['password'], PASSWORD_BCRYPT);
-
-
-       $entity = parent::add($entity);
-
-
-       unset($entity['password']);
-
-
-       return ['success' => true, 'data' => $entity];             
-   }
 
 
    public function login($entity) {  
