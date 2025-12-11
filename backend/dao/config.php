@@ -23,7 +23,7 @@ class Config
    }
    public static function DB_PASSWORD()
    {
-       return 'sifra123';
+       return '';
    }
    public static function DB_HOST()
    {
@@ -31,6 +31,6 @@ class Config
    }
 
    public static function JWT_SECRET() {
-       return 'your_key_string';
+       return '166a340483a06142c502bbf3ed1a0d1ba4b77aa8682d83939fd102ed2c6aa37a';
    }
 }

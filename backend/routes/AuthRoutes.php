@@ -3,46 +3,34 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 Flight::group('/auth', function() {
    /**
-    * @OA\Post(
-    *     path="/auth/register",
-    *     summary="Register new user.",
-    *     description="Add a new user to the database.",
-    *     tags={"auth"},
-    *     security={
-    *         {"ApiKey": {}}
-    *     },
-    *     @OA\RequestBody(
-    *         description="Add new user",
-    *         required=true,
-    *         @OA\MediaType(
-    *             mediaType="application/json",
-    *             @OA\Schema(
-    *                 required={"password", "email"},
-    *                 @OA\Property(
-    *                     property="password",
-    *                     type="string",
-    *                     example="some_password",
-    *                     description="User password"
-    *                 ),
-    *                 @OA\Property(
-    *                     property="email",
-    *                     type="string",
-    *                     example="demo@gmail.com",
-    *                     description="User email"
-    *                 )
-    *             )
-    *         )
-    *     ),
-    *     @OA\Response(
-    *         response=200,
-    *         description="User has been added."
-    *     ),
-    *     @OA\Response(
-    *         response=500,
-    *         description="Internal server error."
-    *     )
-    * )
-    */
+ * @OA\Post(
+ *     path="/auth/register",
+ *     tags={"auth"},
+ *     summary="Register new user",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"name","username","email","password_hash","phone_number","date_of_birth","role"},
+ *             @OA\Property(property="name", type="string", example="John Doe"),
+ *             @OA\Property(property="username", type="string", example="johnd"),
+ *             @OA\Property(property="email", type="string", example="john@example.com"),
+ *             @OA\Property(property="password_hash", type="string", example="$2y$10$saltedhash"),
+ *             @OA\Property(property="phone_number", type="string", example="061234567"),
+ *             @OA\Property(property="date_of_birth", type="string", format="date", example="2000-01-01"),
+ *             @OA\Property(property="role", type="string", example="Customer")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="User has been added."
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Internal server error."
+ *     )
+ * )
+ */
+
    Flight::route("POST /register", function () {
        $data = Flight::request()->data->getData();
 
