@@ -11,11 +11,27 @@ class ProductDao extends BaseDao {
     }
 
     public function getProductById($id) {
-        return $this->getById($id);
+        $sql = "SELECT p.*, GROUP_CONCAT(DISTINCT c.name) as category_names
+                FROM {$this->table} p
+                LEFT JOIN product_categories pc ON p.id = pc.product_id
+                LEFT JOIN categories c ON pc.category_id = c.id
+                WHERE p.id = :id
+                GROUP BY p.id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch();
     }
 
     public function getAllProducts() {
-        return $this->getAll();
+        $sql = "SELECT p.*, GROUP_CONCAT(DISTINCT c.name) as category_names
+                FROM {$this->table} p
+                LEFT JOIN product_categories pc ON p.id = pc.product_id
+                LEFT JOIN categories c ON pc.category_id = c.id
+                GROUP BY p.id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
     public function updateProduct($id, $product) {
@@ -27,10 +43,11 @@ class ProductDao extends BaseDao {
     }
 
     public function getProductsByCategoryName($categoryName) {
-        $sql = "SELECT p.* FROM " . $this->table . " p
+        $sql = "SELECT p.*, GROUP_CONCAT(DISTINCT c.name) as category_names FROM " . $this->table . " p
                 INNER JOIN product_categories pc ON p.id = pc.product_id
                 INNER JOIN categories c ON pc.category_id = c.id
-                WHERE c.name = :category_name";
+                WHERE c.name = :category_name
+                GROUP BY p.id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(':category_name', $categoryName);
         $stmt->execute();

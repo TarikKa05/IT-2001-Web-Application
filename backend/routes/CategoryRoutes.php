@@ -20,7 +20,6 @@
 */
 
 Flight::route('GET /category/@id', function($id){
-   Flight::auth_middleware()->authorizeRole(Roles::USER);
    Flight::json(Flight::categoryService()->getCategoryById($id));
 });
 
@@ -38,7 +37,6 @@ Flight::route('GET /category/@id', function($id){
 */
 
 Flight::route('GET /categories/', function(){
-   Flight::auth_middleware()->authorizeRole(Roles::USER);
    Flight::json(Flight::categoryService()->getAllCategories());
 });
 

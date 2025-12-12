@@ -27,11 +27,11 @@ class ProductService extends BaseService
     }
     public function getProductById($id)
     {
-        return $this->getById($id);
+        return $this->dao->getProductById($id);
     }
     public function getAllProducts()
     {
-        return $this->getAll();
+        return $this->dao->getAllProducts();
     }
     public function updateProduct($id, $product)
     {

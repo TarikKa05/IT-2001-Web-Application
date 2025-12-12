@@ -18,7 +18,6 @@
 */
 // Get a specific product by ID
 Flight::route('GET /product/@id', function($id){
-   Flight::auth_middleware()->authorizeRole(Roles::USER);
    Flight::json(Flight::productService()->getProductById($id));
 });
 
@@ -35,7 +34,6 @@ Flight::route('GET /product/@id', function($id){
 */
 // Get all products
 Flight::route('GET /products/', function(){
-   Flight::auth_middleware()->authorizeRole(Roles::USER);
    Flight::json(Flight::productService()->getAllProducts());
 });
 
@@ -143,8 +141,7 @@ Flight::route('DELETE /product/@id', function($id){
 * )
 */
 Flight::route('GET /productsbycategoryname/', function(){
-    Flight::auth_middleware()->authorizeRole(Roles::USER);
-    $data = Flight::request()->data->getData();
-   Flight::json(Flight::productService()->getProductsByCategoryName($data));
+    $data = Flight::request()->query->getData();
+    Flight::json(Flight::productService()->getProductsByCategoryName($data['category_name']));
 });
 ?>

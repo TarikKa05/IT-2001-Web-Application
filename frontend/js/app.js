@@ -50,7 +50,8 @@ function renderCartTable() {
     .map((product = {}, index) => {
       const quantity = Number(product.quantity) || 0;
       const price = Number(product.price) || 0;
-      const stock = Number.isFinite(product.stock) ? product.stock : 0;
+      const stockValue = product.stock_quantity ?? product.stock;
+      const stock = Number.isFinite(stockValue) ? stockValue : 0;
       const totalPrice = quantity * price;
       return `
         <tr id="product-${index}">
@@ -78,7 +79,7 @@ function renderCartTable() {
           <td>${price}$</td>
           <td id="total-price-${index}">${totalPrice}$</td>
           <td>
-            <button class="btn btn-sm btn-danger btn-sm-custom" onclick="resetProduct(${index})">Reset</button>
+            <button class="btn btn-sm btn-danger btn-sm-custom px-2 py-1" onclick="resetProduct(${index})">Reset</button>
           </td>
         </tr>
       `;
@@ -89,39 +90,92 @@ function renderCartTable() {
 }
 
 
+function normalizeCartProducts(raw = []) {
+  return raw.map((item = {}) => {
+    const parsedStock = Number(item.stock_quantity ?? item.stock);
+    const stock = Number.isFinite(parsedStock) && parsedStock > 0 ? parsedStock : DEFAULT_STOCK_LIMIT;
+    const parsedQuantity = Number(item.quantity);
+    const baseQuantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
+    return {
+      ...item,
+      name: item.name || "Product",
+      price: Number(item.price) || 0,
+      quantity: Math.max(0, Math.min(stock, baseQuantity)),
+      stock,
+      stock_quantity: stock,
+    };
+  });
+}
+
 async function loadCartProducts() {
   try {
-    const res = await fetch("assets/cart.json", { cache: "no-store" });
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    const handleProducts = (products) => {
+      const listData = Array.isArray(products) ? products : products?.data || [];
+      if (!listData.length) throw new Error("No products received from API");
+      cartState.products = normalizeCartProducts(listData);
+      renderCartTable();
+    };
 
+    // Prefer ProductService; fall back to RestClient; lastly to direct fetch.
+    if (window.ProductService) {
+      ProductService.getAll(
+        function (products) {
+          try {
+            handleProducts(products);
+          } catch (err) {
+            console.error("ProductService data issue:", err);
+            showCartLoadError(err);
+          }
+        },
+        function (err) {
+          console.error("Failed to load products for cart:", err);
+          showCartLoadError(err);
+        }
+      );
+      return;
+    }
+
+    if (window.RestClient) {
+      RestClient.get(
+        "products/",
+        function (products) {
+          try {
+            handleProducts(products);
+          } catch (err) {
+            console.error("RestClient data issue:", err);
+            showCartLoadError(err);
+          }
+        },
+        function (err) {
+          console.error("Failed to load products for cart via RestClient:", err);
+          showCartLoadError(err);
+        }
+      );
+      return;
+    }
+
+    // Last-resort direct fetch
+    const res = await fetch(`${Constants.PROJECT_BASE_URL}products/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
     const data = await res.json();
-    cartState.products = Array.isArray(data)
-      ? data.map((item = {}) => {
-          const parsedStock = Number(item.stock);
-          const stock = Number.isFinite(parsedStock) && parsedStock > 0 ? parsedStock : DEFAULT_STOCK_LIMIT;
-          const parsedQuantity = Number(item.quantity);
-          return {
-            ...item,
-            price: Number(item.price) || 0,
-            quantity: Number.isFinite(parsedQuantity) ? Math.max(0, Math.min(stock, parsedQuantity)) : 0,
-            stock,
-          };
-        })
-      : [];
-    renderCartTable();
+    handleProducts(data);
   } catch (error) {
     console.error("Failed to load cart items:", error);
-    const tbody = document.querySelector("#productTable tbody");
-    if (tbody) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="6" class="text-center text-danger py-4">
-            Unable to load cart data.<br/>
-            <small>${error.message}</small>
-          </td>
-        </tr>
-      `;
-    }
+    showCartLoadError(error);
+  }
+}
+
+function showCartLoadError(error) {
+  const tbody = document.querySelector("#productTable tbody");
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center text-danger py-4">
+          Unable to load cart data.<br/>
+          <small>${error?.message || "Unknown error"}</small>
+        </td>
+      </tr>
+    `;
   }
 }
 
@@ -131,11 +185,12 @@ function adjustQuantity(index, delta) {
 
   const product = cartState.products[index];
   const currentQuantity = Number(product.quantity) || 0;
-  const stock = Number.isFinite(product.stock) ? product.stock : 0;
+  const stock = Number.isFinite(product.stock_quantity ?? product.stock)
+    ? (product.stock_quantity ?? product.stock)
+    : 0;
 
   if (delta > 0 && currentQuantity >= stock) {
-    const stockText = stock === 0 ? "This item is currently out of stock." : `Only ${stock} item${stock === 1 ? "" : "s"} available in stock.`;
-    setStockMessage(stockText);
+    alert("Stock is empty for this item.");
     return;
   }
 
@@ -155,6 +210,10 @@ function adjustQuantity(index, delta) {
 
 
 function handleTotalCalculation() {
+  if (window.UserService && !UserService.requireAuthOrRedirect("/signup")) {
+    return;
+  }
+
   const total = cartState.products.reduce((sum, product = {}) => {
     const quantity = Number(product.quantity) || 0;
     const price = Number(product.price) || 0;
@@ -232,155 +291,31 @@ function initCartView() {
   window.resetProduct = resetProduct;
 }
 
+function buildOrderPayloadFromCart() {
+  const token = localStorage.getItem("user_token");
+  const parsed = Utils.parseJwt(token);
+  const userId = parsed?.user?.id;
+  const total = cartState.products.reduce((sum, product = {}) => {
+    const quantity = Number(product.quantity) || 0;
+    const price = Number(product.price) || 0;
+    return sum + quantity * price;
+  }, 0);
+  return {
+    user_id: userId,
+    total_amount: total,
+  };
+}
+
 function initSigninView() {
-  const form = document.getElementById("signinForm");
-  if (!form || form.dataset.signinInitialized === "true") return;
-
-  form.dataset.signinInitialized = "true";
-
-  const emailInput = form.querySelector("#email");
-  const passwordInput = form.querySelector("#password");
-  const repeatPasswordInput = form.querySelector("#repeatPassword");
-  const allInputs = [emailInput, passwordInput, repeatPasswordInput].filter(
-    Boolean,
-  );
-
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    allInputs.forEach((input) => input.classList.remove("is-invalid"));
-    const messages = [];
-
-    const emailValue = emailInput?.value.trim() ?? "";
-    const passwordValue = passwordInput?.value.trim() ?? "";
-    const repeatValue = repeatPasswordInput?.value.trim() ?? "";
-
-    if (!emailValue) {
-      messages.push("Please enter your email address.");
-      emailInput?.classList.add("is-invalid");
-    }
-
-    if (!passwordValue) {
-      messages.push("Please enter your password.");
-      passwordInput?.classList.add("is-invalid");
-    }
-
-    if (repeatPasswordInput) {
-      if (!repeatValue) {
-        messages.push("Please repeat your password.");
-        repeatPasswordInput.classList.add("is-invalid");
-      } else if (repeatValue !== passwordValue) {
-        messages.push("Passwords must match.");
-        repeatPasswordInput.classList.add("is-invalid");
-      }
-    }
-
-    if (messages.length > 0) {
-      alert(messages.join("\n"));
-      return;
-    }
-
-    window.location.hash = "/landing";
-  });
+  if (window.UserService && typeof UserService.bindSigninForm === "function") {
+    UserService.bindSigninForm();
+  }
 }
 
 function initSignupView() {
-  const form = document.getElementById("registrationForm");
-  if (!form || form.dataset.signupInitialized === "true") return;
-
-  form.dataset.signupInitialized = "true";
-
-  const fields = {
-    name: form.querySelector("#name"),
-    username: form.querySelector("#username"),
-    email: form.querySelector("#email"),
-    password: form.querySelector("#password"),
-    repeatPassword: form.querySelector("#repeatPassword"),
-    phoneNumber: form.querySelector("#phoneNumber"),
-    birthDate: form.querySelector("#birthDate"),
-  };
-
-  const activityRadios = Array.from(
-    form.querySelectorAll('input[name="activityLevel"]'),
-  );
-  const allValidatedInputs = [
-    ...Object.values(fields).filter(Boolean),
-    ...activityRadios,
-  ];
-
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    allValidatedInputs.forEach((input) => input.classList.remove("is-invalid"));
-    const messages = [];
-
-    if (!fields.name?.value.trim()) {
-      messages.push("Please enter your name.");
-      fields.name?.classList.add("is-invalid");
-    }
-
-    if (!fields.username?.value.trim()) {
-      messages.push("Please enter a username.");
-      fields.username?.classList.add("is-invalid");
-    }
-
-    const emailValue = fields.email?.value.trim() ?? "";
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    if (!emailPattern.test(emailValue)) {
-      messages.push("Please enter a valid email address.");
-      fields.email?.classList.add("is-invalid");
-    }
-
-    const passwordValue = fields.password?.value.trim() ?? "";
-    if (passwordValue.length < 7 || passwordValue.length > 15) {
-      messages.push("Password must be between 7 and 15 characters.");
-      fields.password?.classList.add("is-invalid");
-    }
-
-    const repeatValue = fields.repeatPassword?.value.trim() ?? "";
-    if (passwordValue !== repeatValue) {
-      messages.push("Passwords must match.");
-      fields.repeatPassword?.classList.add("is-invalid");
-    }
-
-    const phoneValue = fields.phoneNumber?.value.trim() ?? "";
-    const phonePattern = /^[0-9]+$/;
-    if (!phonePattern.test(phoneValue)) {
-      messages.push("Please enter a valid phone number.");
-      fields.phoneNumber?.classList.add("is-invalid");
-    }
-
-    if (!fields.birthDate?.value.trim()) {
-      messages.push("Please enter a valid date of birth.");
-      fields.birthDate?.classList.add("is-invalid");
-    }
-
-    if (messages.length > 0) {
-      alert(messages.join("\n"));
-      return;
-    }
-
-    try {
-      const existing = JSON.parse(
-        localStorage.getItem("registrationData") || "[]",
-      );
-      const registrationEntry = {
-        name: fields.name?.value.trim() ?? "",
-        username: fields.username?.value.trim() ?? "",
-        email: emailValue,
-        password: passwordValue,
-        phoneNumber: phoneValue,
-        birthDate: fields.birthDate?.value.trim() ?? "",
-      };
-      existing.push(registrationEntry);
-      localStorage.setItem("registrationData", JSON.stringify(existing));
-    } catch (error) {
-      console.error("Failed to cache registration info:", error);
-    }
-
-    alert("Registration successful!");
-    window.location.hash = "/landing";
-  });
+  if (window.UserService && typeof UserService.bindSignupForm === "function") {
+    UserService.bindSignupForm();
+  }
 }
 
 function initLandingView() {
@@ -447,6 +382,10 @@ document.addEventListener("view:loaded", (event) => {
 
   if (route === "/signup") {
     initSignupView();
+  }
+
+  if (route === "/products") {
+    initProductsView();
   }
 });
 
@@ -521,3 +460,172 @@ window.fetchWeatherData = async function (latitude, longitude) {
     weatherDiv.innerHTML = `<p class="text-danger">Error fetching weather data: ${error.message}</p>`;
   }
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn && !logoutBtn.dataset.bound) {
+    logoutBtn.dataset.bound = "true";
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (window.UserService) {
+        UserService.logoutWithCheck();
+      }
+    });
+  }
+});
+
+document.addEventListener("click", (event) => {
+  const target = event.target.closest("#calculateTotal");
+  if (!target) return;
+
+  if (window.UserService && !UserService.requireAuthOrRedirect("/signup")) {
+    event.preventDefault();
+    return;
+  }
+
+  const payload = buildOrderPayloadFromCart();
+  if (payload.total_amount <= 0) {
+    alert("Add items to your cart before proceeding to payment.");
+    return;
+  }
+
+  if (window.OrderService) {
+    OrderService.createOrder(
+      payload,
+      function () {
+        alert("Order placed successfully!");
+        handleTotalCalculation();
+      },
+      function (err) {
+        const msg =
+          err?.responseJSON?.error ||
+          err?.responseJSON?.message ||
+          err?.responseText ||
+          "Failed to place order.";
+        toastr.error(msg);
+      }
+    );
+  }
+});
+
+function renderProductsList(products = []) {
+  const list = document.getElementById("dynamicProductCards");
+  if (!list) return;
+
+  const items = Array.isArray(products) ? products : [];
+
+  const chunks = [];
+  for (let i = 0; i < items.length; i += 3) {
+    chunks.push(items.slice(i, i + 3));
+  }
+
+  list.innerHTML = chunks
+    .map(
+      (chunk) => `
+        ${chunk
+          .map((product) => {
+            const name = product.name || "Product";
+            const category =
+              (product.category_names
+                ? product.category_names.split(",").map((c) => c.trim()).filter(Boolean)[0]
+                : null) ||
+              product.category_name ||
+              "Category";
+            const price = product.price !== undefined ? `${product.price}$` : "";
+            const description = product.description || "";
+            return `
+              <div class="col-12 col-md-4">
+                <div class="card h-100 text-center text-black">
+                  <div class="card-body">
+                    <h3 class="card-title"><b>${name}</b></h3>
+                    <p class="mt-2">${description}</p>
+                    <p class="text-muted mb-1">Category: ${category}</p>
+                    <p class="fw-bold">${price}</p>
+                    <a href="#/cart" class="productsButtons">Buy</a>
+                  </div>
+                </div>
+              </div>
+            `;
+          })
+          .join("")}
+      `
+    )
+    .join("");
+}
+
+function renderProductsError(message) {
+  const list = document.getElementById("dynamicProductCards");
+  if (!list) return;
+  list.innerHTML = `
+    <div class="col-12">
+      <div class="alert alert-danger text-center">
+        Unable to load products.<br/>
+        <small>${message || "Unknown error"}</small>
+      </div>
+    </div>`;
+}
+
+function initProductsView() {
+  const fetchAndRender = (products) => {
+    const listData = Array.isArray(products) ? products : products?.data || [];
+    if (listData && listData.length) {
+      renderProductsList(listData);
+    } else {
+      renderProductsError("No products received from API.");
+    }
+  };
+
+  if (window.ProductService) {
+    ProductService.getAll(
+      function (products) {
+        fetchAndRender(products);
+      },
+      function () {
+        // try next fallback
+        if (window.RestClient) {
+          RestClient.get(
+            "products/",
+            function (data) {
+              fetchAndRender(data);
+            },
+            function (err) {
+              renderProductsError(err?.responseText || "Failed to load products.");
+            }
+          );
+        } else {
+          // last-resort direct fetch
+          fetch(`${Constants.PROJECT_BASE_URL}products/`, { cache: "no-store" })
+            .then((res) => {
+              if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+              return res.json();
+            })
+            .then(fetchAndRender)
+            .catch((err) => renderProductsError(err.message));
+        }
+      }
+    );
+    return;
+  }
+
+  if (window.RestClient) {
+    RestClient.get(
+      "products/",
+      function (products) {
+        fetchAndRender(products);
+      },
+      function () {
+        renderProductsError("Failed to load products.");
+      }
+    );
+    return;
+  }
+
+  // last-resort direct fetch
+  fetch(`${Constants.PROJECT_BASE_URL}products/`, { cache: "no-store" })
+    .then((res) => {
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return res.json();
+    })
+    .then(fetchAndRender)
+    .catch((err) => renderProductsError(err.message));
+}

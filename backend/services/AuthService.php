@@ -35,15 +35,18 @@ class AuthService extends BaseService {
         return ['success' => false, 'error' => 'Email already registered.'];
     }
 
-    $entity['password'] = password_hash($entity['password'], PASSWORD_BCRYPT);
+    // Drop non-DB fields
+    unset($entity['repeatPassword']);
+
+    // Map to DB column name
+    $entity['password_hash'] = password_hash($entity['password'], PASSWORD_BCRYPT);
+    unset($entity['password']);
 
     $created = $this->create($entity);
 
     if (!$created) {
         return ['success' => false, 'error' => 'Failed to create user.'];
     }
-
-    unset($entity['password']);
 
     return ['success' => true, 'data' => $entity];
 }
@@ -63,11 +66,11 @@ class AuthService extends BaseService {
        }
 
 
-       if(!$user || !password_verify($entity['password'], $user['password']))
+       if(!$user || !password_verify($entity['password'], $user['password_hash']))
            return ['success' => false, 'error' => 'Invalid username or password.'];
 
 
-       unset($user['password']);
+       unset($user['password_hash']);
       
        $jwt_payload = [
            'user' => $user,

@@ -8,6 +8,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require 'vendor/autoload.php'; //run autoloader
+require_once __DIR__ . "/data/roles.php";
 require "middleware/AuthMiddleware.php";
 Flight::register('auth_middleware', "AuthMiddleware");
 
@@ -29,14 +30,19 @@ Flight::register('productService', 'ProductService');
 require_once __DIR__ . '/services/UserService.php';
 Flight::register('userService', 'UserService');
 
-require 'rest/services/AuthService.php';
+require_once __DIR__ . '/services/AuthService.php';
 Flight::register('auth_service', "AuthService");
-require_once __DIR__ .'rest/routes/AuthRoutes.php';
+require_once __DIR__ . '/routes/AuthRoutes.php';
 
 Flight::route('/*', function() {
    if(
        strpos(Flight::request()->url, '/auth/login') === 0 ||
-       strpos(Flight::request()->url, '/auth/register') === 0
+       strpos(Flight::request()->url, '/auth/register') === 0 ||
+       strpos(Flight::request()->url, '/products') === 0 ||
+       strpos(Flight::request()->url, '/product/') === 0 ||
+       strpos(Flight::request()->url, '/productsbycategoryname') === 0 ||
+       strpos(Flight::request()->url, '/categories') === 0 ||
+       strpos(Flight::request()->url, '/category/') === 0
    ) {
        return TRUE;
    } else {
