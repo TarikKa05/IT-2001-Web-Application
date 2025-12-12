@@ -18,6 +18,7 @@
 */
 // Get a specific orderproduct by ID
 Flight::route('GET /orderproduct/@id', function($id){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    Flight::json(Flight::orderProductService()->getOrderProductById($id));
 });
 
@@ -34,6 +35,7 @@ Flight::route('GET /orderproduct/@id', function($id){
 */
 // Get all orderproducts
 Flight::route('GET /orderproducts/', function(){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    Flight::json(Flight::orderProductService()->getAllOrderProducts());
 });
 
@@ -60,6 +62,7 @@ Flight::route('GET /orderproducts/', function(){
 */
 // Add a new orderproduct
 Flight::route('POST /orderproduct', function(){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    $data = Flight::request()->data->getData();
    Flight::json(Flight::orderProductService()->createOrderProduct($data));
 });
@@ -92,6 +95,7 @@ Flight::route('POST /orderproduct', function(){
 */
 // Update orderproduct by ID
 Flight::route('PUT /orderproduct/@id', function($id){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    $data = Flight::request()->data->getData();
    Flight::json(Flight::orderProductService()->updateOrderProduct($id, $data));
 });
@@ -115,6 +119,7 @@ Flight::route('PUT /orderproduct/@id', function($id){
 */
 // Delete orderproduct by ID
 Flight::route('DELETE /orderproduct/@id', function($id){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    Flight::json(Flight::orderProductService()->deleteOrderProduct($id));
 });
 ?>
