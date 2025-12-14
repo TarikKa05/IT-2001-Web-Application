@@ -1487,6 +1487,13 @@ img {
   line-height: 1.1;
 }
 
+#signinBtn,
+#signupBtn {
+  padding: 8px 14px;
+  font-size: 16px;
+  line-height: 1.1;
+}
+
 .orders-table {
   max-width: 900px;
   margin: 0 auto;

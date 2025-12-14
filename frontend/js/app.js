@@ -95,7 +95,7 @@ function normalizeCartProducts(raw = []) {
     const parsedStock = Number(item.stock_quantity ?? item.stock);
     const stock = Number.isFinite(parsedStock) && parsedStock > 0 ? parsedStock : DEFAULT_STOCK_LIMIT;
     const parsedQuantity = Number(item.quantity);
-    const baseQuantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
+    const baseQuantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 0;
     return {
       ...item,
       name: item.name || "Product",
@@ -269,11 +269,6 @@ function initCartView() {
   cartTable.dataset.cartInitialized = "true";
 
   loadCartProducts();
-
-  const totalButton = document.getElementById("calculateTotal");
-  if (totalButton) {
-    totalButton.addEventListener("click", handleTotalCalculation);
-  }
 
   cartTable.addEventListener("click", (event) => {
     const control = event.target.closest("[data-qty-change]");
@@ -489,6 +484,9 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  // Show the payment message state immediately
+  handleTotalCalculation();
+
   if (window.OrderService) {
     OrderService.createOrder(
       payload,
@@ -505,6 +503,9 @@ document.addEventListener("click", (event) => {
         toastr.error(msg);
       }
     );
+  } else {
+    // If no OrderService is available, still show the calculation message.
+    handleTotalCalculation();
   }
 });
 

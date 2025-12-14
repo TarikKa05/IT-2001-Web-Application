@@ -291,7 +291,7 @@ const AdminApp = (function () {
     AdminService.deleteOrder(
       orderId,
       () => {
-        toastr.info("An email will be sent to the user about the cancellation and refund.");
+        toastr.info("User will be sent an email and a money refund since their order got deleted.");
         loadOrders();
       },
       (err) => {
