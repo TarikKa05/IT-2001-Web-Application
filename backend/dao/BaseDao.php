@@ -60,7 +60,11 @@ class BaseDao {
     $stmt = $this->connection->prepare($sql);
     $stmt->execute($params);
     return $stmt->fetch(); 
-}
+   }
+
+   public function getConnection() {
+    return $this->connection;
+   }
 
 }
 ?>

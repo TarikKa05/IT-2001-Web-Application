@@ -1481,6 +1481,22 @@ img {
   color: #ffeded;
 }
 
+#logoutBtn {
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+.orders-table {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.orders-table td:last-child,
+.orders-table th:last-child {
+  width: 120px;
+}
+
 .admin-table td,
 .admin-table th {
   vertical-align: middle;

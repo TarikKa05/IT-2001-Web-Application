@@ -1,7 +1,7 @@
 <section class="py-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-      <p class="text-uppercase text-muted mb-1">Admin</p>
+      <p class="text-uppercase text-white fw-bold mb-1">ADMIN DASHBOARD</p>
       <h2 class="mb-0">Products</h2>
       <p class="text-muted small mb-0">Edit or remove products from the catalog.</p>
     </div>
@@ -44,7 +44,6 @@
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="mb-0">Edit product</h5>
-        <button type="button" class="btn btn-link text-decoration-none" onclick="document.getElementById('productEditorCard').classList.add('d-none')">Close</button>
       </div>
       <form id="productEditForm" class="row g-3">
         <div class="col-md-6">
@@ -69,9 +68,9 @@
             <label class="form-check-label" for="productAvailable">Available for purchase</label>
           </div>
         </div>
-        <div class="col-12 d-flex justify-content-end gap-2">
-          <button type="reset" class="btn btn-outline-secondary" onclick="event.preventDefault(); document.getElementById('productEditForm').reset();">
-            Reset
+        <div class="col-12 d-flex justify-content-end gap-2 admin-form-actions">
+          <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('productEditorCard').classList.add('d-none')">
+            Close
           </button>
           <button type="submit" class="btn btn-primary">Save changes</button>
         </div>
@@ -160,7 +159,8 @@
           </div>
           <div class="col-12">
             <label class="form-label">Categories (multi-select)</label>
-            <select class="form-select" name="category_ids" multiple required></select>
+            <select class="form-select" name="category_ids" multiple size="6" required></select>
+            <small class="text-white-50">Hold Ctrl (Windows) or Cmd (Mac) to select multiple.</small>
           </div>
           <div class="col-12">
             <label class="form-label">Status</label>

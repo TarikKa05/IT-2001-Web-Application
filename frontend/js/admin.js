@@ -133,9 +133,14 @@ const AdminApp = (function () {
         return `
           <tr>
             <td>${order.id ?? "-"}</td>
-            <td>${order.user_id ?? "-"}</td>
+            <td>${order.user_email ?? order.user_id ?? "-"}</td>
             <td>${formattedTotal}$</td>
             <td>${placed}</td>
+            <td class="text-end">
+              <button class="btn btn-sm admin-btn-danger" data-admin-action="delete-order" data-order-id="${order.id}">
+                Delete
+              </button>
+            </td>
           </tr>
         `;
       })
@@ -147,7 +152,11 @@ const AdminApp = (function () {
     const productSelect = document.querySelector("#adminAddProductForm select[name='category_ids']");
     const deleteSelect = document.querySelector("#adminDeleteCategoryForm select[name='category_id']");
 
-    const options = state.categories
+    const filtered = state.categories.filter(
+      (c) => (c.name || "").toString().trim().toUpperCase() !== "N/A",
+    );
+
+    const options = filtered
       .map((c) => `<option value="${c.id}">${c.name}</option>`)
       .join("");
 
@@ -277,6 +286,25 @@ const AdminApp = (function () {
     );
   }
 
+  function handleOrderDelete(orderId) {
+    if (!orderId || !confirm("Delete this order?")) return;
+    AdminService.deleteOrder(
+      orderId,
+      () => {
+        toastr.info("An email will be sent to the user about the cancellation and refund.");
+        loadOrders();
+      },
+      (err) => {
+        const msg =
+          err?.responseJSON?.error ||
+          err?.responseJSON?.message ||
+          err?.responseText ||
+          "Failed to delete order.";
+        toastr.error(msg);
+      },
+    );
+  }
+
   function handleAddCategory(e) {
     e.preventDefault();
     const form = e.target;
@@ -382,6 +410,8 @@ const AdminApp = (function () {
           err?.responseText ||
           "Failed to delete category.";
         toastr.error(msg);
+        // Close modal even on error if backend handled update, to avoid stale UI
+        closeModal("modalDeleteCategory");
       },
     );
   }
@@ -395,6 +425,11 @@ const AdminApp = (function () {
     const stock = parseInt(form.stock_quantity.value, 10);
     const isAvailable = form.is_available.value === "1" ? 1 : 0;
     const categoryIds = Array.from(form.category_ids.selectedOptions).map((o) => o.value);
+    if (!categoryIds.length) {
+      // fallback for browsers that don't support selectedOptions
+      const selected = Array.from(form.category_ids.options || []).filter((o) => o.selected);
+      categoryIds.push(...selected.map((o) => o.value));
+    }
 
     if (!name || !description) {
       toastr.error("Name and description are required.");
@@ -528,6 +563,8 @@ const AdminApp = (function () {
         showProductEditor(action.dataset.productId);
       } else if (adminAction === "delete-product") {
         handleProductDelete(action.dataset.productId);
+      } else if (adminAction === "delete-order") {
+        handleOrderDelete(action.dataset.orderId);
       }
     });
 

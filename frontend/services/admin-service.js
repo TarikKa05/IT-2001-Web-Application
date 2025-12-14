@@ -29,6 +29,10 @@ const AdminService = {
     RestClient.get("orders/", callback, error_callback);
   },
 
+  deleteOrder(id, callback, error_callback) {
+    RestClient.delete(`order/${id}`, null, callback, error_callback);
+  },
+
   getCategories(callback, error_callback) {
     RestClient.get("categories/", callback, error_callback);
   },

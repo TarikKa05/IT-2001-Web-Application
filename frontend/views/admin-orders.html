@@ -1,7 +1,7 @@
 <section class="py-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-      <p class="text-uppercase text-muted mb-1">Admin</p>
+      <p class="text-uppercase text-white fw-bold mb-1">ADMIN DASHBOARD</p>
       <h2 class="mb-0">Orders</h2>
       <p class="text-muted small mb-0">Overview of all orders.</p>
     </div>
@@ -10,18 +10,19 @@
   <div class="card shadow-sm admin-card">
     <div class="card-body">
       <div class="table-responsive">
-        <table class="table align-middle admin-table" id="adminOrdersTable">
+        <table class="table align-middle admin-table orders-table" id="adminOrdersTable">
           <thead>
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">User</th>
+              <th scope="col">User Email</th>
               <th scope="col">Total</th>
               <th scope="col">Placed</th>
+              <th scope="col" class="text-end">Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colspan="4" class="text-center py-3">Loading...</td>
+              <td colspan="5" class="text-center py-3">Loading...</td>
             </tr>
           </tbody>
         </table>
