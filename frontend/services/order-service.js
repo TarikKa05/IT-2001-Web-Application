@@ -12,4 +12,8 @@ let OrderService = {
   getOrder: function (id, callback, error_callback) {
     RestClient.get(`order/${id}`, callback, error_callback);
   },
+
+  getAll: function (callback, error_callback) {
+    RestClient.get("orders/", callback, error_callback);
+  },
 };

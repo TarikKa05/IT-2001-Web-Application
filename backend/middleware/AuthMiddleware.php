@@ -12,7 +12,18 @@ class AuthMiddleware {
    }
    public function authorizeRole($requiredRole) {
        $user = Flight::get('user');
-       if ($user->role !== $requiredRole) {
+       if (!$user) {
+           // Attempt to verify token from the current request if not already set
+           $token = Flight::request()->getHeader("Authentication");
+           if ($token) {
+               $this->verifyToken($token);
+               $user = Flight::get('user');
+           }
+       }
+       if (!$user) {
+           Flight::halt(401, 'Unauthorized: missing or invalid token');
+       }
+       if (!isset($user->role) || $user->role !== $requiredRole) {
            Flight::halt(403, 'Access denied: insufficient privileges');
        }
    }

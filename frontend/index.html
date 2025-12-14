@@ -22,23 +22,33 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#/landing">Home</a>
-            </li>
-            <li class="nav-item">
-          <a class="nav-link" href="#/products">Products</a>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="#/cart">Cart</a></li>
-      </ul>
-      <div class="auth-actions">
-        <a class="btn outline" href="#/signin">Sign In</a>
-        <a class="btn solid" href="#/signup">Sign Up</a>
-        <a class="btn outline" href="#/landing" id="logoutBtn">Logout</a>
-      </div>
-    </div>
-  </nav>
-</header>
+          <ul class="navbar-nav me-auto" id="primaryNav"></ul>
+          <div class="auth-actions">
+            <a
+              class="btn outline"
+              href="#/signin"
+              data-auth-action="signin"
+              id="signinBtn"
+              >Sign In</a
+            >
+            <a
+              class="btn solid"
+              href="#/signup"
+              data-auth-action="signup"
+              id="signupBtn"
+              >Sign Up</a
+            >
+            <a
+              class="btn outline d-none"
+              href="#/landing"
+              id="logoutBtn"
+              data-auth-action="logout"
+              >Logout</a
+            >
+          </div>
+        </div>
+      </nav>
+    </header>
 
     <main id="app" class="container py-4"></main>
 
@@ -88,12 +98,15 @@
     <script src="./utils/utils.js"></script>
     <script src="./utils/rest-client.js"></script>
     <script src="./services/user-service.js"></script>
+    <script src="./services/admin-service.js"></script>
     <script src="./services/product-service.js"></script>
     <script src="./services/category-service.js"></script>
     <script src="./services/order-service.js"></script>
 
     <script src="./js/theme.js"></script>
     <script src="./js/app.js"></script>
+    <script src="./js/admin.js"></script>
+    <script src="./js/navigation.js"></script>
     <script src="./js/router.js"></script>
   </body>
 </html>

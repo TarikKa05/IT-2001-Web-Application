@@ -1343,3 +1343,124 @@ img {
   margin-bottom: 1rem;
   font-weight: 600;
 }
+
+/* Admin styling */
+.admin-card {
+  background: linear-gradient(145deg, #1f2125, #111317);
+  border: 1px solid #2a2c32;
+  color: #f5f5f5;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.admin-card .card-body {
+  background: rgba(17, 19, 23, 0.6);
+  border-radius: 0.5rem;
+}
+
+.admin-card label {
+  color: #fff;
+}
+
+.admin-card input,
+.admin-card textarea {
+  background: #16181c;
+  color: #f5f5f5;
+  border-color: #2a2c32;
+}
+
+.admin-card input::placeholder,
+.admin-card textarea::placeholder {
+  color: #e5e7eb;
+}
+
+.admin-table {
+  color: #111317;
+  background: #f8f9fb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.admin-table thead,
+.admin-table thead th {
+  background: #5c1b1b !important;
+  color: #fff !important;
+  border-bottom: none !important;
+}
+
+.admin-table tbody tr,
+.admin-table tbody tr td {
+  background: #ffffff !important;
+}
+
+.admin-card .admin-table tbody tr:nth-of-type(odd),
+.admin-card .admin-table tbody tr:nth-of-type(odd) td {
+  background: #ffffff !important;
+}
+
+.admin-card .admin-table tbody tr:nth-of-type(even),
+.admin-card .admin-table tbody tr:nth-of-type(even) td {
+  background: #e0e0e0 !important;
+}
+
+.admin-card .admin-table tbody tr:hover,
+.admin-card .admin-table tbody tr:hover td {
+  background: #d0d0d0 !important;
+}
+
+.admin-table td,
+.admin-table th {
+  vertical-align: middle;
+}
+
+.admin-table .btn {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.admin-table .btn-danger {
+  background-color: #c0392b;
+  border-color: #c0392b;
+}
+
+.admin-table .btn-danger:hover {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+.admin-table .btn-primary {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.admin-table .btn-primary:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.admin-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.admin-top-btn {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.admin-btn-danger {
+  background-color: #c0392b;
+  border-color: #c0392b;
+  color: #fff;
+}
+
+.admin-btn-danger:hover {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+  color: #fff;
+}
+
+.admin-form-actions .btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}

@@ -11,4 +11,18 @@ let ProductService = {
     const query = $.param({ category_name: categoryName });
     RestClient.get(`productsbycategoryname/?${query}`, callback, error_callback);
   },
+
+  update: function (id, payload, callback, error_callback) {
+    RestClient.put(
+      `product/${id}`,
+      JSON.stringify(payload),
+      callback,
+      error_callback,
+      { contentType: "application/json", dataType: "json", processData: false }
+    );
+  },
+
+  delete: function (id, callback, error_callback) {
+    RestClient.delete(`product/${id}`, null, callback, error_callback);
+  },
 };
