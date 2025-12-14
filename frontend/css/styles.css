@@ -1362,15 +1362,20 @@ img {
 }
 
 .admin-card input,
-.admin-card textarea {
+.admin-card textarea,
+.admin-card select {
   background: #16181c;
   color: #f5f5f5;
   border-color: #2a2c32;
 }
 
 .admin-card input::placeholder,
-.admin-card textarea::placeholder {
+.admin-card textarea::placeholder,
+.admin-card select option {
   color: #e5e7eb;
+}
+.admin-card select {
+  appearance: auto;
 }
 
 .admin-table {
@@ -1405,6 +1410,75 @@ img {
 .admin-card .admin-table tbody tr:hover,
 .admin-card .admin-table tbody tr:hover td {
   background: #d0d0d0 !important;
+}
+
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+}
+
+.admin-modal__dialog {
+  background: #0f1115;
+  border: 1px solid #2a2c32;
+  border-radius: 0.75rem;
+  width: min(600px, 95vw);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+  color: #f5f5f5;
+}
+
+.admin-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem 0.5rem;
+}
+
+.admin-modal__body {
+  padding: 0.5rem 1.25rem 1.25rem;
+}
+
+.admin-modal .row.g-2 > [class^="col-"] {
+  margin-bottom: 0.5rem;
+}
+
+.admin-modal label {
+  color: #fff;
+}
+
+.admin-modal .form-control,
+.admin-modal .form-select,
+.admin-modal textarea {
+  background: #16181c;
+  color: #f5f5f5;
+  border-color: #2a2c32;
+}
+
+.admin-modal .form-control::placeholder,
+.admin-modal textarea::placeholder,
+.admin-modal .form-select option {
+  color: #e5e7eb;
+}
+
+.admin-modal .form-select {
+  appearance: auto;
+}
+
+.btn-close-white {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.btn-close-white:hover {
+  color: #ffeded;
 }
 
 .admin-table td,

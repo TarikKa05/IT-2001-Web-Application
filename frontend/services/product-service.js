@@ -12,6 +12,16 @@ let ProductService = {
     RestClient.get(`productsbycategoryname/?${query}`, callback, error_callback);
   },
 
+  create: function (payload, callback, error_callback) {
+    RestClient.post(
+      "product/",
+      JSON.stringify(payload),
+      callback,
+      error_callback,
+      { contentType: "application/json", dataType: "json", processData: false }
+    );
+  },
+
   update: function (id, payload, callback, error_callback) {
     RestClient.put(
       `product/${id}`,
