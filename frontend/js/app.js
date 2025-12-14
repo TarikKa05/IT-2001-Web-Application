@@ -566,8 +566,28 @@ function renderProductsError(message) {
     </div>`;
 }
 
-function initProductsView() {
-  const fetchAndRender = (products) => {
+let productFilterBound = false;
+let cachedCategories = [];
+
+function populateProductCategoryFilter(categories = []) {
+  const select = document.getElementById("productCategoryFilter");
+  if (!select) return;
+  const filtered = categories.filter(
+    (c) => (c.name || "").toString().trim().toUpperCase() !== "N/A",
+  );
+  const options =
+    filtered.length > 0
+      ? filtered.map((c) => `<option value="${c.name}">${c.name}</option>`).join("")
+      : `<option value="" disabled>No categories available</option>`;
+
+  select.innerHTML = `
+    <option value="">All categories</option>
+    ${options}
+  `;
+}
+
+function fetchAndRenderProducts(categoryName = "") {
+  const handleData = (products) => {
     const listData = Array.isArray(products) ? products : products?.data || [];
     if (listData && listData.length) {
       renderProductsList(listData);
@@ -576,57 +596,113 @@ function initProductsView() {
     }
   };
 
+  const onError = (err) => {
+    const message =
+      err?.responseJSON?.error ||
+      err?.responseJSON?.message ||
+      err?.responseText ||
+      err?.message ||
+      "Failed to load products.";
+    renderProductsError(message);
+  };
+
   if (window.ProductService) {
-    ProductService.getAll(
-      function (products) {
-        fetchAndRender(products);
-      },
-      function () {
-        // try next fallback
-        if (window.RestClient) {
-          RestClient.get(
-            "products/",
-            function (data) {
-              fetchAndRender(data);
-            },
-            function (err) {
-              renderProductsError(err?.responseText || "Failed to load products.");
-            }
-          );
-        } else {
-          // last-resort direct fetch
-          fetch(`${Constants.PROJECT_BASE_URL}products/`, { cache: "no-store" })
-            .then((res) => {
-              if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-              return res.json();
-            })
-            .then(fetchAndRender)
-            .catch((err) => renderProductsError(err.message));
-        }
-      }
-    );
+    if (categoryName) {
+      ProductService.getByCategoryName(
+        categoryName,
+        (data) => handleData(data),
+        (err) => onError(err),
+      );
+    } else {
+      ProductService.getAll(
+        (data) => handleData(data),
+        (err) => onError(err),
+      );
+    }
     return;
   }
 
   if (window.RestClient) {
-    RestClient.get(
-      "products/",
-      function (products) {
-        fetchAndRender(products);
-      },
-      function () {
-        renderProductsError("Failed to load products.");
-      }
-    );
+    const url = categoryName
+      ? `productsbycategoryname/?${$.param({ category_name: categoryName })}`
+      : "products/";
+    RestClient.get(url, handleData, onError);
     return;
   }
 
   // last-resort direct fetch
-  fetch(`${Constants.PROJECT_BASE_URL}products/`, { cache: "no-store" })
+  const url = categoryName
+    ? `${Constants.PROJECT_BASE_URL}productsbycategoryname/?${new URLSearchParams({
+        category_name: categoryName,
+      }).toString()}`
+    : `${Constants.PROJECT_BASE_URL}products/`;
+
+  fetch(url, { cache: "no-store" })
     .then((res) => {
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
       return res.json();
     })
-    .then(fetchAndRender)
-    .catch((err) => renderProductsError(err.message));
+    .then(handleData)
+    .catch(onError);
+}
+
+function bindProductFilters() {
+  if (productFilterBound) return;
+  productFilterBound = true;
+
+  const applyBtn = document.getElementById("productCategoryApply");
+  const resetBtn = document.getElementById("productCategoryReset");
+  const select = document.getElementById("productCategoryFilter");
+
+  if (applyBtn) {
+    applyBtn.addEventListener("click", () => {
+      const selected = select?.value || "";
+      fetchAndRenderProducts(selected);
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      if (select) select.value = "";
+      fetchAndRenderProducts("");
+    });
+  }
+}
+
+function initProductsView() {
+  bindProductFilters();
+
+  if (window.CategoryService) {
+    CategoryService.getAll(
+      (cats) => {
+        cachedCategories = Array.isArray(cats) ? cats : [];
+        populateProductCategoryFilter(cachedCategories);
+      },
+      () => {
+        cachedCategories = [];
+        populateProductCategoryFilter(cachedCategories);
+        // Try fallback fetch if CategoryService fails
+        fetch(`${Constants.PROJECT_BASE_URL}categories/`, { cache: "no-store" })
+          .then((res) => (res.ok ? res.json() : []))
+          .then((data) => {
+            if (Array.isArray(data) && data.length) {
+              cachedCategories = data;
+              populateProductCategoryFilter(cachedCategories);
+            }
+          })
+          .catch(() => {});
+      },
+    );
+  } else {
+    // Direct fetch if CategoryService missing
+    fetch(`${Constants.PROJECT_BASE_URL}categories/`, { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        cachedCategories = Array.isArray(data) ? data : [];
+        populateProductCategoryFilter(cachedCategories);
+      })
+      .catch(() => populateProductCategoryFilter([]));
+  }
+
+  fetchAndRenderProducts("");
 }
