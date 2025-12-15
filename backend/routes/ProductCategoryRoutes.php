@@ -18,6 +18,7 @@
 */
 // Get a specific productCategory by ID
 Flight::route('GET /productcategory/@id', function($id){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    Flight::json(Flight::productCategoryService()->getProductCategoryById($id));
 });
 
@@ -34,6 +35,7 @@ Flight::route('GET /productcategory/@id', function($id){
 */
 // Get all productCategorys
 Flight::route('GET /productcategories/', function(){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    Flight::json(Flight::productCategoryService()->getAllProductCategories());
 });
 
@@ -58,6 +60,7 @@ Flight::route('GET /productcategories/', function(){
 */
 // Add a new productCategory
 Flight::route('POST /productcategory/', function(){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    $data = Flight::request()->data->getData();
    Flight::json(Flight::productCategoryService()->createProductCategory($data));
 });
@@ -88,6 +91,7 @@ Flight::route('POST /productcategory/', function(){
 */
 // Update productCategory by ID
 Flight::route('PUT /productcategory/@id', function($id){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    $data = Flight::request()->data->getData();
    Flight::json(Flight::productCategoryService()->updateProductCategory($id, $data));
 });
@@ -111,6 +115,7 @@ Flight::route('PUT /productcategory/@id', function($id){
 */
 // Delete productCategory by ID
 Flight::route('DELETE /productcategory/@id', function($id){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    Flight::json(Flight::productCategoryService()->deleteProductCategory($id));
 });
 ?>

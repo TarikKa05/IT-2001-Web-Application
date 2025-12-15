@@ -1,0 +1,38 @@
+<section class="py-4 admin-wrapper">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div>
+      <p class="text-uppercase text-white fw-bold mb-1">ADMIN DASHBOARD</p>
+      <h2 class="mb-0">User Management</h2>
+      <p class="small mb-0 text-white">Review and remove users as needed.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-light btn-sm admin-top-btn" href="#/admin/register-user">Register User</a>
+      <a class="btn btn-primary btn-sm admin-top-btn" href="#/admin/register">Register Admin</a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm admin-card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table align-middle admin-table" id="adminUsersTable">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Username</th>
+              <th scope="col">Role</th>
+              <th scope="col" class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="7" class="text-center py-3">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

@@ -6,6 +6,17 @@
 
     <hr class="divider" />
 
+    <div class="mb-4 d-flex flex-column flex-md-row gap-3 justify-content-center align-items-center product-filter-bar">
+      <div class="d-flex align-items-center gap-2">
+        <label for="productCategoryFilter" class="text-white fw-bold mb-0">Category:</label>
+        <select id="productCategoryFilter" class="form-select form-select-sm"></select>
+      </div>
+      <div class="d-flex gap-2">
+        <button id="productCategoryApply" class="btn btn-primary btn-sm">Apply</button>
+        <button id="productCategoryReset" class="btn btn-outline-light btn-sm">Reset</button>
+      </div>
+    </div>
+
     <div class="fs-1 fs-md-4 fs-lg-3 text-center" id="best">
       <p class="sameSubTexts">
         We offer only the best 3 products to improve your training. Before
@@ -20,57 +31,9 @@
     </div>
 
     <section id="productCards">
-      <div class="container my-5" style="display: flex">
-        <div class="row justify-content-center gy-4">
-          <div class="col-12 col-md-4">
-            <div class="card h-100 text-center text-black" class="productCards">
-              <div class="card-body">
-                <h3 class="card-title"><b>Whey Protein</b></h3>
-                <img
-                  class="product-image"
-                  src="assets/photos/Whey protein.webp"
-                  alt="Whey Powder Protein Product Picture"
-                />
-
-                <a href="#/whey" class="productsButtons">View More</a>
-                <a href="#/cart" class="productsButtons">Buy</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 col-md-4">
-            <div class="card h-100 text-center text-black">
-              <div class="card-body">
-                <h3 class="card-title"><b>Creatine</b></h3>
-
-                <img
-                  class="product-image"
-                  src="assets/photos/creatin.png"
-                  alt="Creatine Powder Protein Product Picture"
-                />
-
-                <a href="#/creatine" class="productsButtons">View More</a>
-                <a href="#/cart" class="productsButtons">Buy</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 col-md-4">
-            <div class="card h-100 text-center text-black">
-              <div class="card-body">
-                <h3 class="card-title"><b>Omega 3</b></h3>
-
-                <img
-                  class="product-image"
-                  src="assets/photos/omega 3.webp"
-                  alt="Omega 3 Pills Product Picture"
-                />
-
-                <a href="#/omega3" class="productsButtons">View More</a>
-                <a href="#/cart" class="productsButtons">Buy</a>
-              </div>
-            </div>
-          </div>
+      <div class="container my-5 product-cards-container">
+        <div class="row justify-content-center gy-4" id="dynamicProductCards">
+          <!-- Products will be injected here -->
         </div>
       </div>
     </section>

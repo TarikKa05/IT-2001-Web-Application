@@ -1343,3 +1343,253 @@ img {
   margin-bottom: 1rem;
   font-weight: 600;
 }
+
+/* Admin styling */
+.admin-card {
+  background: linear-gradient(145deg, #1f2125, #111317);
+  border: 1px solid #2a2c32;
+  color: #f5f5f5;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.admin-card .card-body {
+  background: rgba(17, 19, 23, 0.6);
+  border-radius: 0.5rem;
+}
+
+.admin-card label {
+  color: #fff;
+}
+
+.admin-card input,
+.admin-card textarea,
+.admin-card select {
+  background: #16181c;
+  color: #f5f5f5;
+  border-color: #2a2c32;
+}
+
+.admin-card input::placeholder,
+.admin-card textarea::placeholder,
+.admin-card select option {
+  color: #e5e7eb;
+}
+.admin-card select {
+  appearance: auto;
+}
+
+.admin-table {
+  color: #111317;
+  background: #f8f9fb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.admin-table thead,
+.admin-table thead th {
+  background: #5c1b1b !important;
+  color: #fff !important;
+  border-bottom: none !important;
+}
+
+.admin-table tbody tr,
+.admin-table tbody tr td {
+  background: #ffffff !important;
+}
+
+.admin-card .admin-table tbody tr:nth-of-type(odd),
+.admin-card .admin-table tbody tr:nth-of-type(odd) td {
+  background: #ffffff !important;
+}
+
+.admin-card .admin-table tbody tr:nth-of-type(even),
+.admin-card .admin-table tbody tr:nth-of-type(even) td {
+  background: #e0e0e0 !important;
+}
+
+.admin-card .admin-table tbody tr:hover,
+.admin-card .admin-table tbody tr:hover td {
+  background: #d0d0d0 !important;
+}
+
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+}
+
+.admin-modal__dialog {
+  background: #0f1115;
+  border: 1px solid #2a2c32;
+  border-radius: 0.75rem;
+  width: min(600px, 95vw);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+  color: #f5f5f5;
+}
+
+.admin-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem 0.5rem;
+}
+
+.admin-modal__body {
+  padding: 0.5rem 1.25rem 1.25rem;
+}
+
+.admin-modal .row.g-2 > [class^="col-"] {
+  margin-bottom: 0.5rem;
+}
+
+.admin-modal label {
+  color: #fff;
+}
+
+.admin-modal .form-control,
+.admin-modal .form-select,
+.admin-modal textarea {
+  background: #16181c;
+  color: #f5f5f5;
+  border-color: #2a2c32;
+}
+
+.admin-modal .form-control::placeholder,
+.admin-modal textarea::placeholder,
+.admin-modal .form-select option {
+  color: #e5e7eb;
+}
+
+.admin-modal .form-select {
+  appearance: auto;
+}
+
+.btn-close-white {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.btn-close-white:hover {
+  color: #ffeded;
+}
+
+#logoutBtn {
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+#signinBtn,
+#signupBtn {
+  padding: 8px 14px;
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.orders-table {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.orders-table td:last-child,
+.orders-table th:last-child {
+  width: 120px;
+}
+
+.admin-table td,
+.admin-table th {
+  vertical-align: middle;
+}
+
+.admin-table .btn {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.admin-table .btn-danger {
+  background-color: #c0392b;
+  border-color: #c0392b;
+}
+
+.admin-table .btn-danger:hover {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+.admin-table .btn-primary {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.admin-table .btn-primary:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.admin-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.admin-top-btn {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.admin-btn-danger {
+  background-color: #c0392b;
+  border-color: #c0392b;
+  color: #fff;
+}
+
+.admin-btn-danger:hover {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+  color: #fff;
+}
+
+.admin-form-actions .btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+#productCategoryFilter {
+  min-width: 200px;
+  height: 36px;
+  align-self: center;
+}
+
+#productCategoryApply,
+#productCategoryReset {
+  padding: 8px 14px;
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+#productCards .product-cards-container {
+  display: block !important;
+}
+
+#dynamicProductCards .card {
+  min-height: 100%;
+}
+
+#dynamicProductCards .card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+#productCards .product-filter-bar {
+  max-width: 900px;
+  margin: 0 auto 8px auto;
+  gap: 10px;
+}

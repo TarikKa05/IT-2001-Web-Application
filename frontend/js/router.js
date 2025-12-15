@@ -7,10 +7,22 @@ const routes = {
   "/cart": "views/cart.html",
   "/signup": "views/signup.html",
   "/signin": "views/signin.html",
+  "/admin/home": "views/admin-home.html",
+  "/admin/products": "views/admin-products.html",
+  "/admin/orders": "views/admin-orders.html",
+  "/admin/register": "views/admin-register.html",
+  "/admin/register-user": "views/admin-register-user.html",
 };
 
+function getDefaultRoute() {
+  if (window.UserService && typeof UserService.isAdmin === "function" && UserService.isAdmin()) {
+    return "/admin/home";
+  }
+  return "/landing";
+}
+
 async function loadView(route) {
-  const path = routes[route] || routes["/landing"];
+  const path = routes[route] || routes[getDefaultRoute()];
   try {
     const response = await fetch(path, { cache: "no-cache" });
     if (!response.ok) {
@@ -38,8 +50,17 @@ async function loadView(route) {
 }
 
 function handleRoute() {
-  const hash = window.location.hash.replace("#", "");
-  loadView(hash || "/landing");
+  const hash = window.location.hash.replace("#", "") || getDefaultRoute();
+  const isAdminRoute = hash.startsWith("/admin");
+  if (isAdminRoute && !(window.UserService && UserService.isAdmin())) {
+    toastr.warning("Admin access only.");
+    const fallback = getDefaultRoute();
+    window.location.hash = fallback;
+    return;
+  }
+
+  const routeToLoad = routes[hash] ? hash : getDefaultRoute();
+  loadView(routeToLoad);
 }
 
 function setActiveNav(route) {

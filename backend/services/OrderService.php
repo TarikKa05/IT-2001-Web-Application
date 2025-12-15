@@ -29,7 +29,7 @@ class OrderService extends BaseService
     }
     public function getAllOrders()
     {
-        return $this->getAll();
+        return $this->dao->getAllOrders();
     }
     public function updateOrder($id, $order)
     {
@@ -45,6 +45,9 @@ class OrderService extends BaseService
     }
     public function deleteOrder($id)
     {
+        // Remove child order_products first to satisfy FK constraints
+        $stmt = $this->dao->getConnection()->prepare("DELETE FROM order_products WHERE order_id = :id");
+        $stmt->execute(['id' => $id]);
         return $this->delete($id);
     }
 }

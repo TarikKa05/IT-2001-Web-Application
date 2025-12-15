@@ -61,6 +61,7 @@ Flight::route('GET /products/', function(){
 */
 // Add a new product
 Flight::route('POST /product/', function(){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    $data = Flight::request()->data->getData();
    Flight::json(Flight::productService()->createProduct($data));
 });
@@ -94,6 +95,7 @@ Flight::route('POST /product/', function(){
 */
 // Update product by ID
 Flight::route('PUT /product/@id', function($id){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    $data = Flight::request()->data->getData();
    Flight::json(Flight::productService()->updateProduct($id, $data));
 });
@@ -117,6 +119,7 @@ Flight::route('PUT /product/@id', function($id){
 */
 // Delete product by ID
 Flight::route('DELETE /product/@id', function($id){
+   Flight::auth_middleware()->authorizeRole(Roles::ADMIN);
    Flight::json(Flight::productService()->deleteProduct($id));
 });
 
@@ -138,7 +141,7 @@ Flight::route('DELETE /product/@id', function($id){
 * )
 */
 Flight::route('GET /productsbycategoryname/', function(){
-    $data = Flight::request()->data->getData();
-   Flight::json(Flight::productService()->getProductsByCategoryName($data));
+    $data = Flight::request()->query->getData();
+    Flight::json(Flight::productService()->getProductsByCategoryName($data['category_name']));
 });
 ?>

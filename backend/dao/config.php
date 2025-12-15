@@ -1,29 +1,36 @@
 <?php
-class Database {
-   private static $host = 'localhost';
-   private static $dbName = 'gym_web_app';
-   private static $username = 'user';
-   private static $password = 'sifra123';
-   private static $connection = null;
 
 
-   public static function connect() {
-       if (self::$connection === null) {
-           try {
-               self::$connection = new PDO(
-                   "mysql:host=" . self::$host . ";dbname=" . self::$dbName,
-                   self::$username,
-                   self::$password,
-                   [
-                       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                       PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-                   ]
-               );
-           } catch (PDOException $e) {
-               die("Connection failed: " . $e->getMessage());
-           }
-       }
-       return self::$connection;
+// Set the reporting
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL ^ (E_NOTICE | E_DEPRECATED));
+
+
+class Config
+{
+   public static function DB_NAME()
+   {
+       return 'gym_web_app'; 
+   }
+   public static function DB_PORT()
+   {
+       return  3306;
+   }
+   public static function DB_USER()
+   {
+       return 'root';
+   }
+   public static function DB_PASSWORD()
+   {
+       return '';
+   }
+   public static function DB_HOST()
+   {
+       return '127.0.0.1';
+   }
+
+   public static function JWT_SECRET() {
+       return '166a340483a06142c502bbf3ed1a0d1ba4b77aa8682d83939fd102ed2c6aa37a';
    }
 }
-?>

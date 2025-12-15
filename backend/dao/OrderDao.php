@@ -15,7 +15,12 @@ class OrderDao extends BaseDao {
     }
 
     public function getAllOrders() {
-        return $this->getAll();
+        $sql = "SELECT o.*, u.email as user_email
+                FROM {$this->table} o
+                LEFT JOIN users u ON o.user_id = u.id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
     public function updateOrder($id, $order) {

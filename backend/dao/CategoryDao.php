@@ -25,5 +25,10 @@ class CategoryDao extends BaseDao {
     public function deleteCategory($id) {
         return $this->delete($id);
     }
+
+    public function getCategoryByName($name) {
+        $query = "SELECT * FROM {$this->table} WHERE name = :name";
+        return $this->query_unique($query, ['name' => $name]);
+    }
 }
 ?>
