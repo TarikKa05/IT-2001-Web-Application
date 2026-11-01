@@ -8,9 +8,9 @@ Gym Club is a web application for a gym that sells fitness supplements (whey pro
 
 ```
 backend/
-  config/       # configuration (secrets excluded from Git)
-  dao/          # data access objects
-  logs/         # log files (excluded from Git)
+  config/       # configuration (excluded from Git)
+  dao/         
+  logs/         #  (excluded from Git)
   middleware/
   routes/
   services/
@@ -34,13 +34,6 @@ Navigation is hash-based (`#/route`); views are loaded into `index.html` without
 - `#/signin` – login
 - `#/profile` – user profile and order history
 
-## How to Run
-
-The frontend loads views with `fetch`, so it must be served over HTTP (not opened as a file):
-
-- Open `frontend/` with VS Code **Live Server**, or
-- Run `npx serve frontend` / `python -m http.server` inside `frontend/` and open the shown URL.
-
 ## Database (Draft ERD)
 
 ![ERD](ERD_Draft.png)
@@ -53,7 +46,3 @@ Entities:
 - **product_categories** – product_id, category_id (products ↔ categories, many-to-many)
 - **orders** – id, user_id, total_amount, order_date (user has many orders)
 - **order_products** – order_id, product_id, quantity, unit_price (orders ↔ products, many-to-many)
-
-## External API
-
-The landing page uses the **OpenWeatherMap API** to show the current weather and the browser **Geolocation API** to show the user's coordinates. The API key is not committed; replace `YOUR_OPENWEATHERMAP_API_KEY` in `frontend/js/app.js` locally.
