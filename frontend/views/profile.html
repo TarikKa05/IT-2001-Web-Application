@@ -1,0 +1,82 @@
+<div class="background-image">
+  <section id="profileInformation">
+    <div class="container my-5">
+      <div class="card mx-auto" style="max-width: 600px; border-color: maroon">
+        <div class="card-header text-center" id="registrationFormTitle">
+          <h3>MY PROFILE</h3>
+        </div>
+        <div class="card-body">
+          <form id="profileForm">
+            <div class="mb-3">
+              <label for="profileName" class="form-label">Name:</label>
+              <input type="text" class="form-control" id="profileName" value="Tarik Korman" />
+            </div>
+
+            <div class="mb-3">
+              <label for="profileUsername" class="form-label">Username:</label>
+              <input type="text" class="form-control" id="profileUsername" value="tarikk" />
+            </div>
+
+            <div class="mb-3">
+              <label for="profileEmail" class="form-label">Email:</label>
+              <input type="email" class="form-control" id="profileEmail" value="tarik@gymclub.ba" />
+            </div>
+
+            <div class="mb-3">
+              <label for="profilePhone" class="form-label">Phone Number:</label>
+              <input type="text" class="form-control" id="profilePhone" value="060000000" />
+            </div>
+
+            <div class="mb-3">
+              <label for="profileBirthDate" class="form-label">Date of Birth:</label>
+              <input type="date" class="form-control" id="profileBirthDate" value="2000-01-01" />
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-primary w-100 d-flex justify-content-center align-items-center"
+              id="submitBtn"
+            >
+              Save Changes
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <h1 class="shadow">My Orders</h1>
+
+  <hr class="divider" />
+
+  <section id="orderHistory">
+    <div class="container" style="z-index: 3">
+      <div class="cart-container">
+        <table class="cart-table">
+          <thead>
+            <tr class="customHeader">
+              <th style="width: 15%">Order #</th>
+              <th style="width: 25%">Date</th>
+              <th style="width: 40%">Products</th>
+              <th style="width: 20%">Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1001</td>
+              <td>2026-10-12</td>
+              <td>WHEY PROTEIN x1, CREATINE x1</td>
+              <td>70$</td>
+            </tr>
+            <tr>
+              <td>1002</td>
+              <td>2026-10-25</td>
+              <td>OMEGA 3 x2</td>
+              <td>30$</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
