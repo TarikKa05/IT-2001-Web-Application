@@ -8,12 +8,17 @@ Gym Club is a web application for a gym that sells fitness supplements (whey pro
 
 ```
 backend/
-  config/       # configuration (excluded from Git)
-  dao/         
-  logs/         #  (excluded from Git)
+  config/
+    config.example.php   # settings template 
+    config.php           # (excluded from Git)
+  logs/                  # (excluded from Git)
   middleware/
-  routes/
-  services/
+  rest/
+    dao/                 
+    routes/
+    services/
+database/
+  gym_web_app.sql        # schema + sample data
 frontend/
   assets/       # images, video, static JSON data
   css/
@@ -38,11 +43,23 @@ Navigation is hash-based (`#/route`); views are loaded into `index.html` without
 
 ![ERD](ERD_Draft.png)
 
-Entities:
+MySQL database `gym_web_app`.
 
-- **users** – id, name, username, email, password_hash, phone_number, date_of_birth
-- **products** – id, name, description, price, stock_quantity, is_available
-- **categories** – id, name, description
-- **product_categories** – product_id, category_id (products ↔ categories, many-to-many)
-- **orders** – id, user_id, total_amount, order_date (user has many orders)
-- **order_products** – order_id, product_id, quantity, unit_price (orders ↔ products, many-to-many)
+- **users** 
+- **products** 
+- **categories** 
+- **product_categories**
+- **orders**
+- **order_products** 
+
+## DAO Layer
+
+The DAO layer is in `backend/rest/dao` and uses PDO with prepared statements.
+
+- **BaseDao** – one shared PDO connection and the generic methods `get_all()`, `get_by_id()`, `count_all()`, `add()`, `update()`, `delete()` and transactions. 
+- **UserDao** – `get_by_email()`; `get_all()` and `get_by_id()` never return the password hash
+- **ProductDao** – `get_by_category()`, `change_stock()`
+- **CategoryDao** – `count_products_per_category()`
+- **ProductCategoryDao**
+- **OrderDao** – `get_by_user()`
+- **OrderProductDao** – `get_by_order()`
