@@ -1,0 +1,159 @@
+
+
+  <div class="container-fluid background-image">
+    
+      
+
+    <section id="introduction">
+
+
+      <div class="container section text-center">
+        <h1 class="shadow display-5">BUILD YOUR BODY</h1>
+        <p class="fs-4 font-small">At GYM Club, we try to empower individuals to achieve their
+          health and wellness goals through innovative training programs, healthy supplements, and community support.
+        </p>
+        <hr class="divider">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-8">
+            <video id="gymVideo" controls class="w-100 mb-4">
+              <source src="assets/photos/gym_video.mp4" type="video/mp4">
+              Gym Video - Coach and Person trainig ogether.
+            </video>
+          </div>
+        </div>
+        <hr class="divider">
+
+      </div>
+      <div class="container section text-center">
+        <h2 class="shadow display-5">Join Us Today!</h2>
+        <p class="sameSubTexts">Experience the difference. Sign up now and start your journey towards a healthier
+          lifestyle!</p>
+        <a href="#/signup" class="btn btn-success">Register Now</a>
+      </div>
+    </section>
+
+
+    <section id="findUs">
+      <div class="container section text-center">
+        <h2 class="shadow display-5">Come Meet Us!</h2>
+        <article class="sameSubTexts">If you still have any doubts come meet us in person. These are our coordinates:
+        </article>
+        <div class="row justify-content-center mt-3">
+          <div class="col-12 col-sm-8 col-md-6 d-flex justify-content-center">
+            <div class="coordinatesDiv">
+              <h3><b>Latitude:</b> 43.8563</h3>
+              <h3><b>Longitude:</b> 18.4131</h3>
+            </div>
+          </div>
+        </div>
+        <button onclick="getLocation()" class="btn btn-success mt-3">Check Your Coordinates</button>
+        <button onclick="fetchWeatherData(43.8563, 18.4131)" class="btn btn-primary mt-3">Check Your Weather</button>
+        <p id="location"></p>
+        <div id="weather" class="mt-3"></div>
+        <article class="sameSubTexts">You can always find us using <a
+            href="https://www.google.com/maps?q=43.8563,18.4131" target="_blank" class="customLink">Google Maps.</a>
+        </article>
+
+      </div>
+    </section>
+
+
+    <hr class="divider">
+
+
+
+    <section id="fcontactInformation">
+      <div class="container section text-center">
+        <h2 class="shadow display-5">Customer Support</h2>
+        <div class="row justify-content-center">
+          <p class="sameSubTexts">If you have any questions, send us an email.</p>
+          <div class="col-12 col-md-6">
+            <a href="mailto:amela.vatres@stu.ibu.edu.ba" class="btn btn-primary w-100">
+              Send us Email
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+    
+
+      <section class="faq-section mt-5">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq">
+          <div class="faq-item">
+            <button class="faq-question">What is Gym Club?</button>
+            <p class="faq-answer">Gym Club is a place where individuals can achieve their health and wellness goals
+              through training, supplements, and community support.</p>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">How can I join Gym Club?</button>
+            <p class="faq-answer">You can join by signing up through the registration page on our website.</p>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">What are the membership benefits?</button>
+            <p class="faq-answer">Members get access to exclusive gym programs, discounts on products, and personalized
+              health plans.</p>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">What is the gym's opening hours?</button>
+            <p class="faq-answer">Gym Club operates from 7:00 AM to 11:00 PM every day.</p>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">Can I cancel my membership?</button>
+            <p class="faq-answer">Yes, you can cancel your membership anytime through your account settings.</p>
+          </div>
+        </div>
+      </section>
+
+      
+    </section>
+
+
+
+    <div class="container my-5">
+      <h2 class="shadow display-5">Photos of Our Gym</h2>
+      <div class="gallery">
+        <img src="assets/photos/I 1.jpg" alt="Slika 1" data-full="assets/photos/I 1.jpg">
+        <img src="assets/photos/I 2.jpg" alt="Slika 2" data-full="assets/photos/I 2.jpg">
+        <img src="assets/photos/i 3.jpg" alt="Slika 3" data-full="assets/photos/i 3.jpg">
+        <img src="assets/photos/i 4.jpg" alt="Slika 4" data-full="assets/photos/i 4.jpg">
+      </div>
+    </div>
+
+
+    <div class="modal" id="imageModal">
+      <span class="close" id="closeModal">&times;</span>
+      <img id="modalImage" src="" alt="Velika slika">
+    </div>
+
+
+
+  </div>
+
+  </div>
+
+
+
+  <div class="modal fade" id="subscriptionModal" tabindex="-1" aria-labelledby="subscriptionModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Success!</h3>
+        </div>
+        <div class="modal-body">
+          <p>Thank you for subscribing to our newsletter.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  
+

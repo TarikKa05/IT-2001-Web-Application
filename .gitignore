@@ -1,0 +1,11 @@
+# Logs
+backend/logs/
+
+# Dependencies / vendor
+backend/vendor/
+vendor/
+node_modules/
+
+# Secrets / configuration
+.env
+backend/config/config.php
