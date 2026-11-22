@@ -479,11 +479,11 @@ function updateLandingWeatherDisplay(data) {
   if (!weatherDiv) return;
   weatherDiv.innerHTML = `
       <div class="weather-card">
-        <h3>Current Weather:</h3>
-        <p><b>Temperature:</b> ${data.main?.temp ?? "-"}&deg;C</p>
-        <p><b>Weather:</b> ${data.weather?.[0]?.description ?? "-"}</p>
-        <p><b>Humidity:</b> ${data.main?.humidity ?? "-"}%</p>
-        <p><b>Wind Speed:</b> ${data.wind?.speed ?? "-"} m/s</p>
+        <h3>Current Weather in ${data.city ?? "-"}:</h3>
+        <p><b>Temperature:</b> ${data.temperature ?? "-"}&deg;C</p>
+        <p><b>Weather:</b> ${data.description ?? "-"}</p>
+        <p><b>Humidity:</b> ${data.humidity ?? "-"}%</p>
+        <p><b>Wind Speed:</b> ${data.wind_speed ?? "-"} m/s</p>
       </div>
     `;
 }
@@ -503,19 +503,18 @@ window.getLocation = function () {
   );
 };
 
-window.fetchWeatherData = async function (latitude, longitude) {
+window.fetchWeatherData = async function (city) {
   const weatherDiv = document.getElementById("weather");
   if (!weatherDiv) return;
 
-  const apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
-  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
+  const apiUrl = `../backend/weather/current?city=${encodeURIComponent(city)}`;
 
   try {
     const response = await fetch(apiUrl);
-    if (!response.ok) {
-      throw new Error("Failed to fetch weather data");
-    }
     const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error ?? "Failed to fetch weather data");
+    }
     updateLandingWeatherDisplay(data);
   } catch (error) {
     weatherDiv.innerHTML = `<p class="text-danger">Error fetching weather data: ${error.message}</p>`;
