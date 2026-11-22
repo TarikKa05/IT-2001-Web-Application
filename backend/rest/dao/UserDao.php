@@ -24,4 +24,9 @@ class UserDao extends BaseDao
     {
         return $this->query_unique("SELECT * FROM users WHERE email = :email", ['email' => $email]);
     }
+
+    public function get_by_username($username)
+    {
+        return $this->query_unique("SELECT " . self::PUBLIC_COLUMNS . " FROM users WHERE username = :username", ['username' => $username]);
+    }
 }
