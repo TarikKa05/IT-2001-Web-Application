@@ -8,6 +8,11 @@ class ProductDao extends BaseDao
         parent::__construct('products', ['name', 'description', 'price', 'stock_quantity', 'is_available']);
     }
 
+    public function get_by_name($name)
+    {
+        return $this->query_unique("SELECT * FROM products WHERE name = :name", ['name' => $name]);
+    }
+
     public function get_by_category($category_id)
     {
         return $this->query(

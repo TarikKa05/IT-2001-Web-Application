@@ -8,6 +8,11 @@ class CategoryDao extends BaseDao
         parent::__construct('categories', ['name', 'description']);
     }
 
+    public function get_by_name($name)
+    {
+        return $this->query_unique("SELECT * FROM categories WHERE name = :name", ['name' => $name]);
+    }
+
     public function count_products_per_category()
     {
         return $this->query(
